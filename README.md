@@ -15,8 +15,8 @@ STRELA leverages a Coarse-Grained Reconfigurable Array (CGRA) architecture to pr
 ### Repository Contents
  - **Source Code**: Implementation of the STRELA architecture, including HDL files for hardware synthesis and software drivers for controlling the hardware.
 
-### Diagram
-<img src="block_diagrams/cgra_x-heep.png" width="100">
+### Block Diagram
+<img src="block_diagrams/cgra_x-heep.png" width="300">
 
 ### Author
 - [Daniel Vázquez](https://github.com/danivz) - daniel.vazquez@upm.es

@@ -1,0 +1,65 @@
+# Copyright 2024 CEI-UPM
+# Daniel Vazquez (daniel.vazquez@upm.es)
+
+
+# PE number
+position: 0
+
+# Processing element configuration
+# PE FF clock gates
+ff_cgen_n: 0
+ff_cgen_e: 0
+ff_cgen_s: 0
+ff_cgen_w: 0
+
+# Fork senders
+fs_n: 0b000000 # Fork sender North : din_1_r | din_2_r | cin_r | east_REG_din_r  | south_REG_din_r | west_REG_din_r
+fs_e: 0b000000 # Fork sender East :  din_1_r | din_2_r | cin_r | north_REG_din_r | south_REG_din_r | west_REG_din_r
+fs_s: 0b000000 # Fork sender South : din_1_r | din_2_r | cin_r | north_REG_din_r | east_REG_din_r  | west_REG_din_r
+fs_w: 0b000000 # Fork sender West :  din_1_r | din_2_r | cin_r | north_REG_din_r | east_REG_din_r  | south_REG_din_r
+
+# Multiplexers
+sel_n: 0 # Mux selector North : dout_b2(6) | dout_1(5) | dout_d(4) | dout(3) | west_buffer  (2) | south_buffer (1) | east_buffer  (0) 
+sel_e: 0 # Mux selector East :  dout_b2(6) | dout_1(5) | dout_d(4) | dout(3) | west_buffer  (2) | south_buffer (1) | north_buffer (0)
+sel_s: 0 # Mux selector South : dout_b2(6) | dout_1(5) | dout_d(4) | dout(3) | west_buffer  (2) | east_buffer  (1) | north_buffer (0)
+sel_w: 0 # Mux selector West :  dout_b2(6) | dout_1(5) | dout_d(4) | dout(3) | south_buffer (2) | east_buffer  (1) | north_buffer (0)
+
+# Processing cell configuration
+# PC FF clock gates
+ff_cgen_pc_1: 0
+ff_cgen_pc_2: 0
+
+# Multiplexers
+sel_pc_1: 0 # Mux selector FU1     : dout(5) | I1_const (4) | west_din (3) | south_din (2) | east_din (1) | north_din (0)
+sel_pc_2: 0 # Mux selector FU2     : dout(5) | I1_const (4) | west_din (3) | south_din (2) | east_din (1) | north_din (0)
+sel_pc_c: 0 # Mux selector control : west_din (3) | south_din (2) | east_din (1) | north_din (0)
+
+# Join merge mode: Merge (2) | Join with control (1) | Join without control (0)
+jm_mode: 0
+
+# Mux selector FU_data : without feedback loop (0) | with feedback loop {scalar from register} (1)
+feedback: 0
+
+# ALU Operation : XOR (8) | OR (7) | AND (6) | SRA (5) | SRL (4) | SR (3) | substract (2) | multiply (1) | add (0)
+alu_sel: 0
+
+# Comparator Operation : greater than 0 (1) | equal to 0 (0)
+cmp_sel: 0
+
+# Result : data from MUX (2) | data from CMP (1) | data from ALU (0)
+out_sel: 0
+
+# Fork sender FU : din_2 | din_1 | north_dout_r | east_dout_r | south_dout_r | west_dout_r
+fs_pc: 0b000000
+
+# Initial valid
+initial_valid: 0
+
+# Initial data
+initial_data: 0
+
+# Constant
+const: 0
+
+# Delay value
+delay_value: 0

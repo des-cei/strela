@@ -16,12 +16,12 @@ STRELA leverages a Coarse-Grained Reconfigurable Array (CGRA) architecture to pr
  - **Source Code**: Implementation of the STRELA architecture, including HDL files for hardware synthesis and software drivers for controlling the hardware.
 
 ### Diagram
-![STRELA Architecture Diagram](./block_diagrams/cgra_x-heep.png)
+<img src="block_diagrams/cgra_x-heep.png" width="100">
 
 ### Author
-- [Daniel Vázquez](@danivz) - daniel.vazquez@upm.es
+- [Daniel Vázquez](https://github.com/danivz) - daniel.vazquez@upm.es
 
 ### License
-This project is licensed under the Solderpad Hardware License, Version 2.1, see [License](./LICENSE.md) for details. SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+This project is licensed under the Solderpad Hardware License, Version 2.1, see [License](./LICENSE) for details. SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 --- 

@@ -54,7 +54,7 @@ module CGRA
 
     always_comb begin
         for (int unsigned i = 0; i < 16; i++) begin
-            if (config_bitstream[151:144] == i[11:0] && config_bitstream[152])  catch_config[i] = 1'b1;
+            if (config_bitstream[151:144] == i[7:0] && config_bitstream[152])  catch_config[i] = 1'b1;
             else                                                                catch_config[i] = 1'b0;
         end
     end

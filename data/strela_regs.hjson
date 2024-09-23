@@ -1,0 +1,269 @@
+// Copyright lowRISC contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+// Daniel Vazquez (daniel.vazquez@upm.es)
+
+{
+  name: "strela",
+  clock_primary: "clk_i",
+  bus_interfaces: [
+    { protocol: "reg_iface", direction: "device" }
+  ],
+  regwidth: "32",
+  registers: [
+    { name:     "CTRL",
+      desc:     "STRELA control register",
+      resval:   0,
+      swaccess: "wo",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0", name: "START",        desc: "CGRA start" }
+        { bits: "1", name: "CLR_PARAM",    desc: "CGRA clear parameters (IP)" }
+        { bits: "2", name: "CLR_CONF",     desc: "CGRA clear configuration (CGRA core)" }
+        { bits: "3", name: "PERF_CTR_EN",  desc: "Enable performance counters" }
+        { bits: "4", name: "PERF_CTR_RST", desc: "Reset performance counters" }
+      ]
+    }
+
+    { name:     "STATUS",
+      desc:     "STRELA status register",
+      resval:   0,
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "0", name: "EXEC_DONE", desc: "CGRA execution done" }
+        { bits: "1", name: "CONF_DONE", desc: "CGRA configuration done" }
+      ]
+    }
+
+    // Performance counters
+
+    { name:     "PERF_CTR_TOTAL_CYCLES",
+      desc:     "STRELA performance counter: total cycles",
+      resval:   0,
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:0", name: "PERF_CTR_TOTAL_CYCLES", desc: "STRELA performance counter: total cycles" }
+      ]
+    }
+
+    { name:     "PERF_CTR_EXEC_CYCLES",
+      desc:     "STRELA performance counter: execution cycles",
+      resval:   0,
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:0", name: "PERF_CTR_EXEC_CYCLES", desc: "STRELA performance counter: execution cycles" }
+      ]
+    }
+
+    { name:     "PERF_CTR_CONF_CYCLES",
+      desc:     "STRELA performance counter: configuration cycles",
+      resval:   0,
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:0", name: "PERF_CTR_CONF_CYCLES", desc: "STRELA performance counter: configuration cycles" }
+      ]
+    }
+
+    { name:     "PERF_CTR_STALL_CYCLES",
+      desc:     "STRELA performance counter: stall cycles",
+      resval:   0,
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:0", name: "PERF_CTR_STALL_CYCLES", desc: "STRELA performance counter: stall cycles" }
+      ]
+    }
+
+    // Input Memory Nodes
+
+    { name:     "CONF_ADDR",
+      desc:     "STRELA configuration address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "CONF_ADDR", desc: "STRELA configuration address register" }
+      ]
+    }
+
+    { name:     "CONF_SIZE",
+      desc:     "STRELA configuration size register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0", name: "CONF_SIZE", desc: "STRELA configuration size register" }
+      ]
+    }
+
+    { name:     "IMN_0_ADDR",
+      desc:     "STRELA Input Memory Node 0 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "IMN_0_ADDR", desc: "STRELA Input Memory Node 0 address register" }
+      ]
+    }
+
+    { name:     "IMN_0_PARAM",
+      desc:     "STRELA Input Memory Node 0 extra parameters register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "IMN_0_SIZE",   desc: "STRELA Input Memory Node 0 size register" }
+        { bits: "31:16",  name: "IMN_0_STRIDE", desc: "STRELA Input Memory Node 0 stride register" }
+      ]
+    }
+
+    { name:     "IMN_1_ADDR",
+      desc:     "STRELA Input Memory Node 1 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "IMN_1_ADDR", desc: "STRELA Input Memory Node 1 address register" }
+      ]
+    }
+
+    { name:     "IMN_1_PARAM",
+      desc:     "STRELA Input Memory Node 1 extra parameters register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "IMN_1_SIZE",   desc: "STRELA Input Memory Node 1 size register" }
+        { bits: "31:16",  name: "IMN_1_STRIDE", desc: "STRELA Input Memory Node 1 stride register" }
+      ]
+    }
+
+    { name:     "IMN_2_ADDR",
+      desc:     "STRELA Input Memory Node 2 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "IMN_2_ADDR", desc: "STRELA Input Memory Node 2 address register" }
+      ]
+    }
+
+    { name:     "IMN_2_PARAM",
+      desc:     "STRELA Input Memory Node 2 extra parameters register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "IMN_2_SIZE",   desc: "STRELA Input Memory Node 2 size register" }
+        { bits: "31:16",  name: "IMN_2_STRIDE", desc: "STRELA Input Memory Node 2 stride register" }
+      ]
+    }
+
+    { name:     "IMN_3_ADDR",
+      desc:     "STRELA Input Memory Node 3 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "IMN_3_ADDR", desc: "STRELA Input Memory Node 3 address register" }
+      ]
+    }
+
+    { name:     "IMN_3_PARAM",
+      desc:     "STRELA Input Memory Node 3 extra parameters register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "IMN_3_SIZE",   desc: "STRELA Input Memory Node 3 size register" }
+        { bits: "31:16",  name: "IMN_3_STRIDE", desc: "STRELA Input Memory Node 3 stride register" }
+      ]
+    }
+
+    // Output Memory Nodes
+
+    { name:     "OMN_0_ADDR",
+      desc:     "STRELA Output Memory Node 0 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "OMN_0_ADDR", desc: "STRELA Output Memory Node 0 address register" }
+      ]
+    }
+
+    { name:     "OMN_0_SIZE",
+      desc:     "STRELA Output Memory Node 0 size register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "OMN_0_SIZE",   desc: "STRELA Output Memory Node 0 size register" }
+      ]
+    }
+
+    { name:     "OMN_1_ADDR",
+      desc:     "STRELA Output Memory Node 1 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "OMN_1_ADDR", desc: "STRELA Output Memory Node 1 address register" }
+      ]
+    }
+
+    { name:     "OMN_1_SIZE",
+      desc:     "STRELA Output Memory Node 1 size register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "OMN_1_SIZE",   desc: "STRELA Output Memory Node 1 size register" }
+      ]
+    }
+
+    { name:     "OMN_2_ADDR",
+      desc:     "STRELA Output Memory Node 2 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "OMN_2_ADDR", desc: "STRELA Output Memory Node 2 address register" }
+      ]
+    }
+
+    { name:     "OMN_2_SIZE",
+      desc:     "STRELA Output Memory Node 2 size register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "OMN_2_SIZE",   desc: "STRELA Output Memory Node 2 size register" }
+      ]
+    }
+
+    { name:     "OMN_3_ADDR",
+      desc:     "STRELA Output Memory Node 3 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "OMN_3_ADDR", desc: "STRELA Output Memory Node 3 address register" }
+      ]
+    }
+
+    { name:     "OMN_3_SIZE",
+      desc:     "STRELA Output Memory Node 3 size register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0",   name: "OMN_3_SIZE",   desc: "STRELA Output Memory Node 3 size register" }
+      ]
+    }
+  ]
+}

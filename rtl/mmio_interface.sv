@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-module csr
+module mmio_interface
   import cgra_pkg::*;
   import reg_pkg::*;
   import obi_pkg::*;

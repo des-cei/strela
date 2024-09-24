@@ -49,7 +49,7 @@ module cgra_top
   assign int_o = &omm_done;
 
   // MMIO control registers
-  csr csr_i
+  mmio_interface mmio_interface_i
   (
     .clk_i,
     .rst_ni,

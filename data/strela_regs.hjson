@@ -42,7 +42,7 @@
       desc:     "STRELA performance counter: total cycles",
       resval:   0,
       swaccess: "ro",
-      hwaccess: "hwo",
+      hwaccess: "hrw",
       fields: [
         { bits: "31:0", name: "PERF_CTR_TOTAL_CYCLES", desc: "STRELA performance counter: total cycles" }
       ]
@@ -52,7 +52,7 @@
       desc:     "STRELA performance counter: execution cycles",
       resval:   0,
       swaccess: "ro",
-      hwaccess: "hwo",
+      hwaccess: "hrw",
       fields: [
         { bits: "31:0", name: "PERF_CTR_EXEC_CYCLES", desc: "STRELA performance counter: execution cycles" }
       ]
@@ -62,7 +62,7 @@
       desc:     "STRELA performance counter: configuration cycles",
       resval:   0,
       swaccess: "ro",
-      hwaccess: "hwo",
+      hwaccess: "hrw",
       fields: [
         { bits: "31:0", name: "PERF_CTR_CONF_CYCLES", desc: "STRELA performance counter: configuration cycles" }
       ]
@@ -72,7 +72,7 @@
       desc:     "STRELA performance counter: stall cycles",
       resval:   0,
       swaccess: "ro",
-      hwaccess: "hwo",
+      hwaccess: "hrw",
       fields: [
         { bits: "31:0", name: "PERF_CTR_STALL_CYCLES", desc: "STRELA performance counter: stall cycles" }
       ]

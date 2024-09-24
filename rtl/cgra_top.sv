@@ -44,7 +44,6 @@ module cgra_top
   logic [159:0] kernel_config;
   genvar i;
 
-  logic [31:0] perf_ctr_total_cycles, perf_ctr_conf_cycles, perf_ctr_exec_cycles, perf_ctr_stall_cycles;
   main_fsm_t state;
 
   assign int_o = &omm_done;
@@ -52,25 +51,24 @@ module cgra_top
   // MMIO control registers
   csr csr_i
   (
-    .clk_i                    ( clk_i                 ),
-    .rst_ni                   ( rst_ni                ),
-    .reg_rsp_o                ( reg_rsp_o             ),
-    .reg_req_i                ( reg_req_i             ),
-    .start_o                  ( start                 ),
-    .clr_conf_o               ( clear_bs              ),
-    .exec_done_i              ( int_o                 ),
-    .conf_done_i              ( bs_done               ),
-    .perf_ctr_total_cycles_i  ( perf_ctr_total_cycles ),
-    .perf_ctr_conf_cycles_i   ( perf_ctr_conf_cycles  ),
-    .perf_ctr_exec_cycles_i   ( perf_ctr_exec_cycles  ),
-    .perf_ctr_stall_cycles_i  ( perf_ctr_stall_cycles ),
-    .conf_addr_o              ( config_addr           ),
-    .conf_size_o              ( config_size           ),
-    .imn_addr_o               ( input_addr            ),
-    .imn_size_o               ( input_size            ),
-    .imn_stride_o             ( input_stride          ),
-    .omn_addr_o               ( output_addr           ),
-    .omn_size_o               ( output_size           )
+    .clk_i,
+    .rst_ni,
+    .reg_rsp_o,
+    .reg_req_i,
+    .masters_resp_i,
+    .masters_req_i  ( masters_req_o         ),
+    .start_o        ( start                 ),
+    .clr_conf_o     ( clear_bs              ),
+    .exec_done_i    ( int_o                 ),
+    .conf_done_i    ( bs_done               ),
+    .state_i        ( state                 ),
+    .conf_addr_o    ( config_addr           ),
+    .conf_size_o    ( config_size           ),
+    .imn_addr_o     ( input_addr            ),
+    .imn_size_o     ( input_size            ),
+    .imn_stride_o   ( input_stride          ),
+    .omn_addr_o     ( output_addr           ),
+    .omn_size_o     ( output_size           )
   );
 
   // Control unit
@@ -89,21 +87,6 @@ module cgra_top
     .bs_needed_o    ( bs_needed   ),
     .state_o        ( state       )
   );
-
-  // Performance counters
-  counters counters_i
-  (
-    .clk_i          ( clk_i                 ),
-    .rst_ni         ( rst_ni & !start       ),
-    .masters_resp_i ( masters_resp_i        ),
-    .masters_req_i  ( masters_req_o         ),
-    .state_i        ( state                 ),
-    .bs_cycles_o    ( perf_ctr_conf_cycles  ),
-    .exec_cycles_o  ( perf_ctr_exec_cycles  ),
-    .stall_cycles_o ( perf_ctr_stall_cycles )
-  );
-
-  assign perf_ctr_total_cycles = '0;
 
   // Config node
   config_memory_node config_memory_node_i

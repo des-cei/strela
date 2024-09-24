@@ -6,6 +6,7 @@
 module csr
   import cgra_pkg::*;
   import reg_pkg::*;
+  import obi_pkg::*;
 (
   // Clock and reset
   input  logic        clk_i,
@@ -23,11 +24,10 @@ module csr
   input logic         exec_done_i,
   input logic         conf_done_i,
 
-  // Performance counters
-  input  logic [31:0] perf_ctr_total_cycles_i,
-  input  logic [31:0] perf_ctr_conf_cycles_i,
-  input  logic [31:0] perf_ctr_exec_cycles_i,
-  input  logic [31:0] perf_ctr_stall_cycles_i,
+  // Performance counters stimuli
+  input main_fsm_t              state_i,
+  input  obi_req_t  [NODES-1:0] masters_req_i,
+  input  obi_resp_t [NODES-1:0] masters_resp_i,
 
   // Input Memory Nodes
   output logic [31:0] conf_addr_o,
@@ -42,6 +42,8 @@ module csr
 );
 
   import strela_reg_pkg::*;
+
+  logic [NODES-1:0] stalls;
 
   strela_reg2hw_t reg2hw;
   strela_hw2reg_t hw2reg;
@@ -82,14 +84,18 @@ module csr
   assign hw2reg.status.conf_done.d  = reg2hw.ctrl.clr_conf.q ? 1'b0 : 1'b1;
 
   // Performance counters
-  assign hw2reg.perf_ctr_total_cycles.de = 1'b1;
-  assign hw2reg.perf_ctr_total_cycles.d  = perf_ctr_total_cycles_i;
-  assign hw2reg.perf_ctr_conf_cycles.de = 1'b1;
-  assign hw2reg.perf_ctr_conf_cycles.d  = perf_ctr_conf_cycles_i;
-  assign hw2reg.perf_ctr_exec_cycles.de = 1'b1;
-  assign hw2reg.perf_ctr_exec_cycles.d  = perf_ctr_exec_cycles_i;
-  assign hw2reg.perf_ctr_stall_cycles.de = 1'b1;
-  assign hw2reg.perf_ctr_stall_cycles.d  = perf_ctr_stall_cycles_i;
+  assign hw2reg.perf_ctr_total_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || reg2hw.ctrl.perf_ctr_en.q;
+  assign hw2reg.perf_ctr_total_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_total_cycles.q + 1;
+  assign hw2reg.perf_ctr_conf_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && state_i == S_MAIN_WAIT;
+  assign hw2reg.perf_ctr_conf_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_conf_cycles.q + 1;
+  assign hw2reg.perf_ctr_exec_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && state_i == S_MAIN_EXEC;
+  assign hw2reg.perf_ctr_exec_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_exec_cycles.q + 1;
+  assign hw2reg.perf_ctr_stall_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && |stalls;
+  assign hw2reg.perf_ctr_stall_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_stall_cycles.q + 1;
+
+  for(genvar i = 0; i < NODES; i++) begin
+    assign stalls[i] = masters_req_i[i].req ? !masters_resp_i[i].gnt : 1'b0;
+  end
 
   // Input Memory Nodes
   assign conf_addr_o = reg2hw.conf_addr.q;

@@ -350,7 +350,7 @@ module strela_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (),
+    .q      (reg2hw.perf_ctr_total_cycles.q ),
 
     // to register interface (read)
     .qs     (perf_ctr_total_cycles_qs)
@@ -376,7 +376,7 @@ module strela_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (),
+    .q      (reg2hw.perf_ctr_exec_cycles.q ),
 
     // to register interface (read)
     .qs     (perf_ctr_exec_cycles_qs)
@@ -402,7 +402,7 @@ module strela_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (),
+    .q      (reg2hw.perf_ctr_conf_cycles.q ),
 
     // to register interface (read)
     .qs     (perf_ctr_conf_cycles_qs)
@@ -428,7 +428,7 @@ module strela_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (),
+    .q      (reg2hw.perf_ctr_stall_cycles.q ),
 
     // to register interface (read)
     .qs     (perf_ctr_stall_cycles_qs)

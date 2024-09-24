@@ -33,6 +33,22 @@ package strela_reg_pkg;
 
   typedef struct packed {
     logic [31:0] q;
+  } strela_reg2hw_perf_ctr_total_cycles_reg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
+  } strela_reg2hw_perf_ctr_exec_cycles_reg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
+  } strela_reg2hw_perf_ctr_conf_cycles_reg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
+  } strela_reg2hw_perf_ctr_stall_cycles_reg_t;
+
+  typedef struct packed {
+    logic [31:0] q;
   } strela_reg2hw_conf_addr_reg_t;
 
   typedef struct packed {
@@ -293,7 +309,11 @@ package strela_reg_pkg;
 
   // Register -> HW type
   typedef struct packed {
-    strela_reg2hw_ctrl_reg_t ctrl; // [500:496]
+    strela_reg2hw_ctrl_reg_t ctrl; // [628:624]
+    strela_reg2hw_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles; // [623:592]
+    strela_reg2hw_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles; // [591:560]
+    strela_reg2hw_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles; // [559:528]
+    strela_reg2hw_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles; // [527:496]
     strela_reg2hw_conf_addr_reg_t conf_addr; // [495:464]
     strela_reg2hw_conf_size_reg_t conf_size; // [463:448]
     strela_reg2hw_imn_0_addr_reg_t imn_0_addr; // [447:416]

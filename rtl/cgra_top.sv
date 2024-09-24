@@ -24,17 +24,17 @@ module cgra_top
   output logic                  int_o
 );
 
-  logic start, execute, clear_bs;
+  logic start, exec, clr_conf;
   logic [31:0] config_addr;
   logic [15:0] config_size;
   logic [31:0] input_addr [INPUT_NODES-1:0];
   logic [15:0] input_size [INPUT_NODES-1:0];
   logic [15:0] input_stride [INPUT_NODES-1:0];
-  logic [31:0] output_addr [OUTPUT_NODES-1:0];
-  logic [15:0] output_size [OUTPUT_NODES-1:0];
+  logic [31:0] omn_addr [OUTPUT_NODES-1:0];
+  logic [15:0] omn_size [OUTPUT_NODES-1:0];
 
-  logic clear, clear_core, bs_done, bs_needed, bs_enable;
-  logic [OUTPUT_NODES-1:0]    omm_done;
+  logic clr, clear_core, bs_done, bs_needed, bs_enable;
+  logic [OUTPUT_NODES-1:0]    omn_done;
 
   logic [32*INPUT_NODES-1:0]  din;
   logic [INPUT_NODES-1:0]     din_v, din_r;
@@ -46,7 +46,7 @@ module cgra_top
 
   main_fsm_t state;
 
-  assign int_o = &omm_done;
+  assign int_o = &omn_done;
 
   // MMIO control registers
   mmio_interface mmio_interface_i
@@ -56,19 +56,19 @@ module cgra_top
     .reg_rsp_o,
     .reg_req_i,
     .masters_resp_i,
-    .masters_req_i  ( masters_req_o         ),
-    .start_o        ( start                 ),
-    .clr_conf_o     ( clear_bs              ),
-    .exec_done_i    ( int_o                 ),
-    .conf_done_i    ( bs_done               ),
-    .state_i        ( state                 ),
-    .conf_addr_o    ( config_addr           ),
-    .conf_size_o    ( config_size           ),
-    .imn_addr_o     ( input_addr            ),
-    .imn_size_o     ( input_size            ),
-    .imn_stride_o   ( input_stride          ),
-    .omn_addr_o     ( output_addr           ),
-    .omn_size_o     ( output_size           )
+    .masters_req_i  ( masters_req_o ),
+    .start_o        ( start         ),
+    .clr_conf_o     ( clr_conf      ),
+    .exec_done_i    ( int_o         ),
+    .conf_done_i    ( bs_done       ),
+    .state_i        ( state         ),
+    .conf_addr_o    ( config_addr   ),
+    .conf_size_o    ( config_size   ),
+    .imn_addr_o     ( input_addr    ),
+    .imn_size_o     ( input_size    ),
+    .imn_stride_o   ( input_stride  ),
+    .omn_addr_o     ( omn_addr      ),
+    .omn_size_o     ( omn_size      )
   );
 
   // Control unit
@@ -76,14 +76,14 @@ module cgra_top
   (
     .clk_i          ( clk_i       ),
     .rst_ni         ( rst_ni      ),
-    .clear_o        ( clear       ),
-    .clear_core_o   ( clear_core  ),
     .start_i        ( start       ),
-    .clear_bs_i     ( clear_bs    ),
-    .change_bs_i    ( clear_bs    ),
+    .clear_bs_i     ( clr_conf    ),
+    .change_bs_i    ( clr_conf    ),
     .bs_done_i      ( bs_done     ),
     .execute_done_i ( int_o       ),
-    .execute_o      ( execute     ),
+    .clear_o        ( clr         ),
+    .clear_core_o   ( clear_core  ),
+    .execute_o      ( exec        ),
     .bs_needed_o    ( bs_needed   ),
     .state_o        ( state       )
   );
@@ -92,7 +92,7 @@ module cgra_top
   config_memory_node config_memory_node_i
   (
     .clk_i           ( clk_i                    ),
-    .rst_ni          ( rst_ni & clear           ),
+    .rst_ni          ( rst_ni & clr             ),
     .masters_resp_i  ( masters_resp_i[NODES-1]  ),
     .masters_req_o   ( masters_req_o[NODES-1]   ),
     .execute_i       ( start                    ),
@@ -103,14 +103,14 @@ module cgra_top
     .kernel_config_o ( kernel_config            )
   );
 
-  // Input nodes
+  // Input Memory Nodes
   generate
-    for(i = 0; i < INPUT_NODES; i++) begin : imm_gen
+    for(i = 0; i < INPUT_NODES; i++) begin : imn_gen
       input_memory_node input_memory_node_i
       (
         .clk_i          ( clk_i                 ),
-        .rst_ni         ( rst_ni & clear        ),
-        .execute_i      ( execute               ),
+        .rst_ni         ( rst_ni & clr        ),
+        .execute_i      ( exec               ),
         .masters_resp_i ( masters_resp_i[i]     ),
         .masters_req_o  ( masters_req_o[i]      ),
         .input_addr_i   ( input_addr[i]         ),
@@ -123,19 +123,20 @@ module cgra_top
     end
   endgenerate
 
-  // Output nodes
+  // Output Memory Nodes
   generate
-    for(i = 0; i < INPUT_NODES; i++) begin : omm_gen
+    for(i = 0; i < INPUT_NODES; i++) begin : omn_gen
       output_memory_node output_memory_node_i
       (
-        .clk_i          ( clk_i                           ),
-        .rst_ni         ( rst_ni & clear                  ),
-        .execute_i      ( execute                         ),
+        .clk_i,
+        .rst_ni,
+        .clr_i          ( ~clr                            ),
         .masters_resp_i ( masters_resp_i[INPUT_NODES + i] ),
-        .masters_req_o  ( masters_req_o[INPUT_NODES + i]  ),
-        .done_o         ( omm_done[i]                     ),
-        .output_addr_i  ( output_addr[i]                  ),
-        .output_size_i  ( output_size[i]                  ),
+        .masters_req_o  ( masters_req_o[ INPUT_NODES + i] ),
+        .omn_addr_i     ( omn_addr[i]                     ),
+        .omn_size_i     ( omn_size[i]                     ),
+        .exec_i         ( exec                            ),
+        .done_o         ( omn_done[i]                     ),
         .din_i          ( dout[32*(i+1)-1:32*i]           ),
         .din_v_i        ( dout_v[i]                       ),
         .din_r_o        ( dout_r[i]                       )
@@ -160,7 +161,7 @@ module cgra_top
     .data_out_ready     ( dout_r              ),
     .config_bitstream   ( kernel_config       ),
     .bitstream_enable_i ( bs_enable           ),
-    .execute_i          ( execute             )
+    .execute_i          ( exec             )
   );
 
 endmodule

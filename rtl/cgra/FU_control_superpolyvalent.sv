@@ -5,86 +5,90 @@
 
 module FU_control_superpolyvalent
     (
-        input  logic        clk,
-        input  logic        rst_n,
-        input  logic        cin,
-        input  logic        in_v,
-        output logic        in_r,
-        output logic        out_v,
-        output logic        out_d_v,
-        output logic        out_b1_v,
-        output logic        out_b2_v,
-        input  logic        north_dout_r,
-        input  logic        east_dout_r,
-        input  logic        south_dout_r,
-        input  logic        west_dout_r,
-        input  logic        din_1_r,
-        input  logic        din_2_r,
-        input  logic        initial_valid,
-        input  logic [15:0] delay_value,
-        input  logic [5:0]  fork_mask
+        // Clock and reset
+        input  logic        clk_i,
+        input  logic        rst_ni,
+
+        // Configuration
+        input  logic        initial_valid_i,
+        input  logic [15:0] delay_value_i,
+        input  logic [ 5:0] fork_mask_i,
+
+        // Inputs from Join/Merge
+        input  logic        cin_i,
+        input  logic        in_v_i,
+        output logic        in_r_o,
+
+        // Valid signals
+        output logic        out_v_o,
+        output logic        out_d_v_o,
+        output logic        out_b1_v_o,
+        output logic        out_b2_v_o,
+
+        // Ready signals
+        input  logic        north_dout_r_i,
+        input  logic        east_dout_r_i,
+        input  logic        south_dout_r_i,
+        input  logic        west_dout_r_i,
+        input  logic        din_1_r_i,
+        input  logic        din_2_r_i
     );
 
     logic v_reg, b1_v, b1_v_reg, b2_v, b2_v_reg, initial_load;
     logic [15:0] delay_count;
 
     // Valid path
-    always_comb begin
-        if(!cin) begin
-            b1_v = in_v;
-            b2_v = 1'b0;
-        end else begin
-            b1_v = 1'b0;
-            b2_v = in_v;
-        end
-    end
+    assign b1_v = cin_i ? 1'b0 : in_v_i;
+    assign b2_v = cin_i ? in_v_i : 1'b0;
 
-    always_ff @(posedge clk or negedge rst_n) begin
-        if(rst_n == 1'b0) begin
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if(!rst_ni) begin
             v_reg <= 1'b0;
             b1_v_reg <= 1'b0;
             b2_v_reg <= 1'b0;
             initial_load <= 1'b0;
         end else begin
             if(!initial_load) begin
-                v_reg <= initial_valid;
+                v_reg <= initial_valid_i;
                 initial_load <= 1'b1;
-            end else if(in_r) begin
-                v_reg <= in_v;
+            end else if(in_r_o) begin
+                v_reg <= in_v_i;
                 b1_v_reg <= b1_v;
                 b2_v_reg <= b2_v;
             end
         end
     end
 
-    assign out_v = v_reg & in_r;
-    assign out_b1_v = b1_v_reg & in_r;
-    assign out_b2_v = b2_v_reg & in_r;
+    assign out_v_o = v_reg & in_r_o;
+    assign out_b1_v_o = b1_v_reg & in_r_o;
+    assign out_b2_v_o = b2_v_reg & in_r_o;
 
-    always_ff @(posedge clk or negedge rst_n) begin
-        if(rst_n == 1'b0) begin
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+        if(!rst_ni) begin
             delay_count <= '0;
-        end else if(out_v) begin
-            if (delay_count + 1 == delay_value) begin
-                delay_count <= '0;
-            end else begin
-                delay_count <= delay_count + 1;
+        end else begin
+            if(out_v_o) begin
+                if (delay_count + 1 == delay_value_i) begin
+                    delay_count <= '0;
+                end else begin
+                    delay_count <= delay_count + 1;
+                end
             end
         end
     end
 
-    assign out_d_v = out_v & delay_count + 1 == delay_value;
+    assign out_d_v_o = out_v_o & delay_count + 1 == delay_value_i;
 
     // Ready path
     fork_sender
     #(
-        .NUM_READYS (   6                                                                           )
+        .NUM_READYS   (   6                                                                                     )
     )
     FS
     (
-        .ready_in   (   in_r                                                                    ),
-        .ready_out  ( { din_2_r, din_1_r, north_dout_r, east_dout_r, south_dout_r, west_dout_r }    ),
-        .fork_mask  (   fork_mask                                                                   )
+        .ready_in_o   (   in_r_o                                                                                ),
+        .readys_out_i ( { din_2_r_i, din_1_r_i, north_dout_r_i, east_dout_r_i, south_dout_r_i, west_dout_r_i }  ),
+        .fork_mask_i  (   fork_mask_i                                                                           )
     );
 
 endmodule

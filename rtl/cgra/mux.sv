@@ -9,21 +9,24 @@ module mux
         parameter int DATA_WIDTH = 32
     )
     (
-        input  logic [$clog2(NUM_INPUTS)-1:0]       sel,
-        input  logic [NUM_INPUTS*DATA_WIDTH-1:0]    mux_in,
-        output logic [DATA_WIDTH-1:0]               mux_out
+        // Configuration
+        input  logic [$clog2(NUM_INPUTS)-1:0]       sel_i,
+
+        // Multiplexer signals
+        input  logic [NUM_INPUTS*DATA_WIDTH-1:0]    mux_i,
+        output logic [DATA_WIDTH-1:0]               mux_o
     );
 
     logic [DATA_WIDTH-1:0] inputs [NUM_INPUTS];
 
     for (genvar i = 0; i < NUM_INPUTS; i++) begin
-        assign inputs[i] = mux_in[(i+1)*DATA_WIDTH-1:i*DATA_WIDTH];
+        assign inputs[i] = mux_i[(i+1)*DATA_WIDTH-1:i*DATA_WIDTH];
     end
 
     always_comb begin
-        mux_out = '0;
+        mux_o = '0;
         for (int unsigned i = 0; i < NUM_INPUTS; i++) begin
-            if (sel == $bits(sel)'(i)) mux_out = inputs[i];
+            if (sel_i == $bits(sel_i)'(i)) mux_o = inputs[i];
         end
     end
 

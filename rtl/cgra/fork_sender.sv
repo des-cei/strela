@@ -8,15 +8,18 @@ module fork_sender
         parameter int NUM_READYS = 2
     )
     (
-        output logic                    ready_in,
-        input  logic [NUM_READYS-1:0]   ready_out,
-        input  logic [NUM_READYS-1:0]   fork_mask
+        // Configuration
+        input  logic [NUM_READYS-1:0]   fork_mask_i,
+
+        // Ready signals
+        output logic                    ready_in_o,
+        input  logic [NUM_READYS-1:0]   readys_out_i
     );
 
     logic [NUM_READYS-1:0]  aux, temp/*verilator split_var*/;
 
     for (genvar i = 0; i < NUM_READYS; i++) begin
-        assign aux[i] = !fork_mask[i] || ready_out[i];
+        assign aux[i] = !fork_mask_i[i] || readys_out_i[i];
     end
 
     assign temp[0] = aux[0];
@@ -25,6 +28,6 @@ module fork_sender
         assign temp[i+1] = temp[i] && aux[i+1];
     end
 
-    assign ready_in = temp[NUM_READYS-1];
+    assign ready_in_o = temp[NUM_READYS-1];
 
 endmodule

@@ -9,51 +9,52 @@ module PE_superpolyvalent
     )
     (
         // Clock and reset
-        input  logic                    clk,
-        input  logic                    clk_bs,
-        input  logic                    rst_n,
+        input  logic                    clk_i,
+        input  logic                    rst_ni,
+
+        input  logic                    clk_bs,  // TODO: check if needed with consumption metrics. conf_en_i should infers a clock gate
         input  logic                    rst_n_bs,
 
         // Input data
-        input  logic [DATA_WIDTH-1:0]   north_din,
-        input  logic                    north_din_v,
-        output logic                    north_din_r,
-        input  logic [DATA_WIDTH-1:0]   east_din,
-        input  logic                    east_din_v,
-        output logic                    east_din_r,
-        input  logic [DATA_WIDTH-1:0]   south_din,
-        input  logic                    south_din_v,
-        output logic                    south_din_r,
-        input  logic [DATA_WIDTH-1:0]   west_din,
-        input  logic                    west_din_v,
-        output logic                    west_din_r,
+        input  logic [DATA_WIDTH-1:0]   north_din_i,
+        input  logic                    north_din_v_i,
+        output logic                    north_din_r_o,
+        input  logic [DATA_WIDTH-1:0]   east_din_i,
+        input  logic                    east_din_v_i,
+        output logic                    east_din_r_o,
+        input  logic [DATA_WIDTH-1:0]   south_din_i,
+        input  logic                    south_din_v_i,
+        output logic                    south_din_r_o,
+        input  logic [DATA_WIDTH-1:0]   west_din_i,
+        input  logic                    west_din_v_i,
+        output logic                    west_din_r_o,
 
         // Output data
-        output logic [DATA_WIDTH-1:0]   north_dout,
-        output logic                    north_dout_v,
-        input  logic                    north_dout_r,
-        output logic [DATA_WIDTH-1:0]   east_dout,
-        output logic                    east_dout_v,
-        input  logic                    east_dout_r,
-        output logic [DATA_WIDTH-1:0]   south_dout,
-        output logic                    south_dout_v,
-        input  logic                    south_dout_r,
-        output logic [DATA_WIDTH-1:0]   west_dout,
-        output logic                    west_dout_v,
-        input  logic                    west_dout_r,
+        output logic [DATA_WIDTH-1:0]   north_dout_o,
+        output logic                    north_dout_v_o,
+        input  logic                    north_dout_r_i,
+        output logic [DATA_WIDTH-1:0]   east_dout_o,
+        output logic                    east_dout_v_o,
+        input  logic                    east_dout_r_i,
+        output logic [DATA_WIDTH-1:0]   south_dout_o,
+        output logic                    south_dout_v_o,
+        input  logic                    south_dout_r_i,
+        output logic [DATA_WIDTH-1:0]   west_dout_o,
+        output logic                    west_dout_v_o,
+        input  logic                    west_dout_r_i,
 
         // Configuration
-        input  logic [143:0]            config_bits,
-        input  logic [5:0]              config_enables,
-        input  logic                    catch_config
+        input  logic                    conf_en_i,
+        input  logic [143:0]            conf_bits_i,
+        input  logic [5:0]              eb_enables_i
     );
 
     // Config signals
     logic [2:0]     mux_sel_n, mux_sel_e, mux_sel_s, mux_sel_w;
     logic [1:0]     data_mux_sel_n, data_mux_sel_e, data_mux_sel_s, data_mux_sel_w;
     logic [5:0]     mask_fs_n, mask_fs_e, mask_fs_s, mask_fs_w;
-    logic [143:0]   config_reg;
-    logic [5:0]     enables_reg;
+    logic [143:0]   conf_reg;
+    logic [5:0]     eb_enables_reg;
 
     // Interconnect signals
     // Buffer
@@ -69,55 +70,55 @@ module PE_superpolyvalent
     // Configuration register
     always_ff @(posedge clk_bs or negedge rst_n_bs) begin
         if(!rst_n_bs) begin
-            config_reg <= 0;
-            enables_reg <= 0;
-        end else if(catch_config) begin
-            config_reg <= config_bits;
-            enables_reg <= config_enables;
+            conf_reg        <= 0;
+            eb_enables_reg  <= 0;
+        end else if(conf_en_i) begin
+            conf_reg        <= conf_bits_i;
+            eb_enables_reg  <= eb_enables_i;
         end
     end
 
     // Configuration decoding
-    assign mask_fs_n = config_reg[5:0];
-    assign mask_fs_e = config_reg[11:6];
-    assign mask_fs_s = config_reg[17:12];
-    assign mask_fs_w = config_reg[23:18];
-    assign mux_sel_n = config_reg[26:24];
-    assign mux_sel_e = config_reg[29:27];
-    assign mux_sel_s = config_reg[32:30];
-    assign mux_sel_w = config_reg[35:33];
+    assign mask_fs_n = conf_reg[5:0];
+    assign mask_fs_e = conf_reg[11:6];
+    assign mask_fs_s = conf_reg[17:12];
+    assign mask_fs_w = conf_reg[23:18];
+    assign mux_sel_n = conf_reg[26:24];
+    assign mux_sel_e = conf_reg[29:27];
+    assign mux_sel_s = conf_reg[32:30];
+    assign mux_sel_w = conf_reg[35:33];
 
     /* ------------------------------ NORTH NODE ------------------------------- */
 
     // Input
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH            )
     )
     REG_N
     (
-        .clk        ( clk                   ),
-        .rst_n      ( rst_n                 ),
-        .enable     ( enables_reg[0]        ),
-        .din        ( north_din             ),
-        .din_v      ( north_din_v           ),
-        .din_r      ( north_din_r           ),
-        .dout       ( north_buffer          ),
-        .dout_v     ( temp_north_buffer_v   ),
-        .dout_r     ( north_buffer_r        )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_enables_reg[0]     ),
+        .din_i      ( north_din_i           ),
+        .din_v_i    ( north_din_v_i         ),
+        .din_r_o    ( north_din_r_o         ),
+        .dout_o     ( north_buffer          ),
+        .dout_v_o   ( temp_north_buffer_v   ),
+        .dout_r_i   ( north_buffer_r        )
     );
 
     assign north_buffer_v = temp_north_buffer_v && north_buffer_r;
 
     fork_sender
     #(
-        .NUM_READYS (   6                                                                   )
+        .NUM_READYS     (   6                                                                           )
     )
     FS_N
     (
-        .ready_in   (   north_buffer_r                                                      ),
-        .ready_out  ( { din_1_r, din_2_r, cin_r, east_dout_r, south_dout_r, west_dout_r }   ),
-        .fork_mask  (   mask_fs_n                                                           )
+        .fork_mask_i    (   mask_fs_n                                                                   ),
+        .ready_in_o     (   north_buffer_r                                                              ),
+        .readys_out_i   ( { din_1_r, din_2_r, cin_r, east_dout_r_i, south_dout_r_i, west_dout_r_i }     )
     );
 
     // Output
@@ -130,9 +131,9 @@ module PE_superpolyvalent
     )
     MUX_N
     (
-        .sel        (   data_mux_sel_n                                  ),
-        .mux_in     ( { dout, west_buffer, south_buffer, east_buffer }  ),
-        .mux_out    (   north_dout                                      )
+        .sel_i      (   data_mux_sel_n                                  ),
+        .mux_i      ( { dout, west_buffer, south_buffer, east_buffer }  ),
+        .mux_o      (   north_dout_o                                    )
     );
 
     mux
@@ -142,9 +143,9 @@ module PE_superpolyvalent
     )
     MUX_N_v
     (
-        .sel        (   mux_sel_n                                                                               ),
-        .mux_in     ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, south_buffer_v, east_buffer_v }  ),
-        .mux_out    (   north_dout_v                                                                            )
+        .sel_i      (   mux_sel_n                                                                               ),
+        .mux_i      ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, south_buffer_v, east_buffer_v }  ),
+        .mux_o      (   north_dout_v_o                                                                          )
     );
 
     /* ------------------------------ NORTH NODE ------------------------------- */
@@ -152,34 +153,34 @@ module PE_superpolyvalent
     /* ------------------------------ EAST  NODE ------------------------------- */
 
     // Input
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH            )
     )
     REG_E
     (
-        .clk        ( clk                   ),
-        .rst_n      ( rst_n                 ),
-        .enable     ( enables_reg[1]        ),
-        .din        ( east_din              ),
-        .din_v      ( east_din_v            ),
-        .din_r      ( east_din_r            ),
-        .dout       ( east_buffer           ),
-        .dout_v     ( temp_east_buffer_v    ),
-        .dout_r     ( east_buffer_r         )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_enables_reg[1]     ),
+        .din_i      ( east_din_i            ),
+        .din_v_i    ( east_din_v_i          ),
+        .din_r_o    ( east_din_r_o          ),
+        .dout_o     ( east_buffer           ),
+        .dout_v_o   ( temp_east_buffer_v    ),
+        .dout_r_i   ( east_buffer_r         )
     );
 
     assign east_buffer_v = temp_east_buffer_v && east_buffer_r;
 
     fork_sender
     #(
-        .NUM_READYS (   6                                                                   )
+        .NUM_READYS     (   6                                                                           )
     )
     FS_E
     (
-        .ready_in   (   east_buffer_r                                                       ),
-        .ready_out  ( { din_1_r, din_2_r, cin_r, north_dout_r, south_dout_r, west_dout_r }  ),
-        .fork_mask  (   mask_fs_e                                                           )
+        .fork_mask_i    (   mask_fs_e                                                                   ),
+        .ready_in_o     (   east_buffer_r                                                               ),
+        .readys_out_i   ( { din_1_r, din_2_r, cin_r, north_dout_r_i, south_dout_r_i, west_dout_r_i }    )
     );
 
     // Output
@@ -192,9 +193,9 @@ module PE_superpolyvalent
     )
     MUX_E
     (
-        .sel        (   data_mux_sel_e                                  ),
-        .mux_in     ( { dout, west_buffer, south_buffer, north_buffer } ),
-        .mux_out    (   east_dout                                       )
+        .sel_i      (   data_mux_sel_e                                  ),
+        .mux_i      ( { dout, west_buffer, south_buffer, north_buffer } ),
+        .mux_o      (   east_dout_o                                     )
     );
 
     mux
@@ -204,9 +205,9 @@ module PE_superpolyvalent
     )
     MUX_E_v
     (
-        .sel        (   mux_sel_e                                                                               ),
-        .mux_in     ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, south_buffer_v, north_buffer_v } ),
-        .mux_out    (   east_dout_v                                                                             )
+        .sel_i      (   mux_sel_e                                                                               ),
+        .mux_i      ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, south_buffer_v, north_buffer_v } ),
+        .mux_o      (   east_dout_v_o                                                                           )
     );
 
     /* ------------------------------ EAST  NODE ------------------------------- */
@@ -214,34 +215,34 @@ module PE_superpolyvalent
     /* ------------------------------ SOUTH NODE ------------------------------- */
 
     // Input
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH            )
     )
     REG_S
     (
-        .clk        ( clk                   ),
-        .rst_n      ( rst_n                 ),
-        .enable     ( enables_reg[2]        ),
-        .din        ( south_din             ),
-        .din_v      ( south_din_v           ),
-        .din_r      ( south_din_r           ),
-        .dout       ( south_buffer          ),
-        .dout_v     ( temp_south_buffer_v   ),
-        .dout_r     ( south_buffer_r        )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_enables_reg[2]     ),
+        .din_i      ( south_din_i           ),
+        .din_v_i    ( south_din_v_i         ),
+        .din_r_o    ( south_din_r_o         ),
+        .dout_o     ( south_buffer          ),
+        .dout_v_o   ( temp_south_buffer_v   ),
+        .dout_r_i   ( south_buffer_r        )
     );
 
     assign south_buffer_v = temp_south_buffer_v && south_buffer_r;
 
     fork_sender
     #(
-        .NUM_READYS (   6                                                                   )
+        .NUM_READYS     (   6                                                                           )
     )
     FS_S
     (
-        .ready_in   (   south_buffer_r                                                      ),
-        .ready_out  ( { din_1_r, din_2_r, cin_r, north_dout_r, east_dout_r, west_dout_r }   ),
-        .fork_mask  (   mask_fs_s                                                           )
+        .fork_mask_i    (   mask_fs_s                                                                   ),
+        .ready_in_o     (   south_buffer_r                                                              ),
+        .readys_out_i   ( { din_1_r, din_2_r, cin_r, north_dout_r_i, east_dout_r_i, west_dout_r_i }     )
     );
 
     // Output
@@ -254,9 +255,9 @@ module PE_superpolyvalent
     )
     MUX_S
     (
-        .sel        (   data_mux_sel_s                                  ),
-        .mux_in     ( { dout, west_buffer, east_buffer, north_buffer }  ),
-        .mux_out    (   south_dout                                      )
+        .sel_i      (   data_mux_sel_s                                  ),
+        .mux_i      ( { dout, west_buffer, east_buffer, north_buffer }  ),
+        .mux_o      (   south_dout_o                                    )
     );
 
     mux
@@ -266,9 +267,9 @@ module PE_superpolyvalent
     )
     MUX_S_v
     (
-        .sel        (   mux_sel_s                                                                               ),
-        .mux_in     ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, east_buffer_v, north_buffer_v }  ),
-        .mux_out    (   south_dout_v                                                                            )
+        .sel_i      (   mux_sel_s                                                                               ),
+        .mux_i      ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, west_buffer_v, east_buffer_v, north_buffer_v }  ),
+        .mux_o      (   south_dout_v_o                                                                          )
     );
 
     /* ------------------------------ SOUTH NODE ------------------------------- */
@@ -276,34 +277,34 @@ module PE_superpolyvalent
     /* ------------------------------ WEST  NODE ------------------------------- */
 
     // Input
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH    )
     )
     REG_W
     (
-        .clk        ( clk                   ),
-        .rst_n      ( rst_n                 ),
-        .enable     ( enables_reg[3]        ),
-        .din        ( west_din              ),
-        .din_v      ( west_din_v            ),
-        .din_r      ( west_din_r            ),
-        .dout       ( west_buffer           ),
-        .dout_v     ( temp_west_buffer_v    ),
-        .dout_r     ( west_buffer_r         )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_enables_reg[3]     ),
+        .din_i      ( west_din_i            ),
+        .din_v_i    ( west_din_v_i          ),
+        .din_r_o    ( west_din_r_o          ),
+        .dout_o     ( west_buffer           ),
+        .dout_v_o   ( temp_west_buffer_v    ),
+        .dout_r_i   ( west_buffer_r         )
     );
 
     assign west_buffer_v = temp_west_buffer_v && west_buffer_r;
 
     fork_sender
     #(
-        .NUM_READYS (   6                                                                   )
+        .NUM_READYS     (   6                                                                           )
     )
     FS_W
     (
-        .ready_in   (   west_buffer_r                                                       ),
-        .ready_out  ( { din_1_r, din_2_r, cin_r, north_dout_r, east_dout_r, south_dout_r }  ),
-        .fork_mask  (   mask_fs_w                                                           )
+        .fork_mask_i    (   mask_fs_w                                                                   ),
+        .ready_in_o     (   west_buffer_r                                                               ),
+        .readys_out_i   ( { din_1_r, din_2_r, cin_r, north_dout_r_i, east_dout_r_i, south_dout_r_i }    )
     );
 
     // Output
@@ -316,9 +317,9 @@ module PE_superpolyvalent
     )
     MUX_W
     (
-        .sel        (   data_mux_sel_w                                  ),
-        .mux_in     ( { dout, south_buffer, east_buffer, north_buffer } ),
-        .mux_out    (   west_dout                                       )
+        .sel_i      (   data_mux_sel_w                                  ),
+        .mux_i      ( { dout, south_buffer, east_buffer, north_buffer } ),
+        .mux_o      (   west_dout_o                                     )
     );
 
     mux
@@ -328,9 +329,9 @@ module PE_superpolyvalent
     )
     MUX_W_v
     (
-        .sel        (   mux_sel_w                                                                               ),
-        .mux_in     ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, south_buffer_v, east_buffer_v, north_buffer_v } ),
-        .mux_out    (   west_dout_v                                                                             )
+        .sel_i      (   mux_sel_w                                                                               ),
+        .mux_i      ( { dout_b2_v, dout_b1_v, dout_d_v, dout_v, south_buffer_v, east_buffer_v, north_buffer_v } ),
+        .mux_o      (   west_dout_v_o                                                                           )
     );
 
     /* ------------------------------ WEST  NODE ------------------------------- */
@@ -341,30 +342,30 @@ module PE_superpolyvalent
     )
     cell_inst
     (
-        .clk            ( clk                   ),
-        .rst_n          ( rst_n                 ),
-        .north_din      ( north_buffer          ),
-        .north_din_v    ( north_buffer_v        ),
-        .east_din       ( east_buffer           ),
-        .east_din_v     ( east_buffer_v         ),
-        .south_din      ( south_buffer          ),
-        .south_din_v    ( south_buffer_v        ),
-        .west_din       ( west_buffer           ),
-        .west_din_v     ( west_buffer_v         ),
-        .din_1_r        ( din_1_r               ),
-        .din_2_r        ( din_2_r               ),
-        .cin_r          ( cin_r                 ),
-        .dout           ( dout                  ),
-        .dout_v         ( dout_v                ),
-        .dout_d_v       ( dout_d_v              ),
-        .dout_b1_v      ( dout_b1_v             ),
-        .dout_b2_v      ( dout_b2_v             ),
-        .north_dout_r   ( north_dout_r          ),
-        .east_dout_r    ( east_dout_r           ),
-        .south_dout_r   ( south_dout_r          ),
-        .west_dout_r    ( west_dout_r           ),
-        .config_bits    ( config_reg[143:36]    ),
-        .enables        ( enables_reg[5:4]      )
+        .clk_i,
+        .rst_ni,
+        .north_din_i    ( north_buffer          ),
+        .north_din_v_i  ( north_buffer_v        ),
+        .east_din_i     ( east_buffer           ),
+        .east_din_v_i   ( east_buffer_v         ),
+        .south_din_i    ( south_buffer          ),
+        .south_din_v_i  ( south_buffer_v        ),
+        .west_din_i     ( west_buffer           ),
+        .west_din_v_i   ( west_buffer_v         ),
+        .din_1_r_o      ( din_1_r               ),
+        .din_2_r_o      ( din_2_r               ),
+        .cin_r_o        ( cin_r                 ),
+        .dout_o         ( dout                  ),
+        .dout_v_o       ( dout_v                ),
+        .dout_d_v_o     ( dout_d_v              ),
+        .dout_b1_v_o    ( dout_b1_v             ),
+        .dout_b2_v_o    ( dout_b2_v             ),
+        .north_dout_r_i ( north_dout_r_i        ),
+        .east_dout_r_i  ( east_dout_r_i         ),
+        .south_dout_r_i ( south_dout_r_i        ),
+        .west_dout_r_i  ( west_dout_r_i         ),
+        .conf_bits_i    ( conf_reg[143:36]      ),
+        .eb_en_i        ( eb_enables_reg[5:4]   )
     );
 
 endmodule

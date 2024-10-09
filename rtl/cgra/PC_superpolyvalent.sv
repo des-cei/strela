@@ -9,36 +9,36 @@ module PC_superpolyvalent
     )
     (
         // Clock and reset
-        input  logic                    clk,
-        input  logic                    rst_n,
+        input  logic                    clk_i,
+        input  logic                    rst_ni,
 
         // Input data
-        input  logic [DATA_WIDTH-1:0]   north_din,
-        input  logic                    north_din_v,
-        input  logic [DATA_WIDTH-1:0]   east_din,
-        input  logic                    east_din_v,
-        input  logic [DATA_WIDTH-1:0]   south_din,
-        input  logic                    south_din_v,
-        input  logic [DATA_WIDTH-1:0]   west_din,
-        input  logic                    west_din_v,
-        output logic                    din_1_r,
-        output logic                    din_2_r,
-        output logic                    cin_r,
+        input  logic [DATA_WIDTH-1:0]   north_din_i,
+        input  logic                    north_din_v_i,
+        input  logic [DATA_WIDTH-1:0]   east_din_i,
+        input  logic                    east_din_v_i,
+        input  logic [DATA_WIDTH-1:0]   south_din_i,
+        input  logic                    south_din_v_i,
+        input  logic [DATA_WIDTH-1:0]   west_din_i,
+        input  logic                    west_din_v_i,
+        output logic                    din_1_r_o,
+        output logic                    din_2_r_o,
+        output logic                    cin_r_o,
 
         // Output data
-        output logic [DATA_WIDTH-1:0]   dout,
-        output logic                    dout_v,
-        output logic                    dout_d_v,
-        output logic                    dout_b1_v,
-        output logic                    dout_b2_v,
-        input  logic                    north_dout_r,
-        input  logic                    east_dout_r,
-        input  logic                    south_dout_r,
-        input  logic                    west_dout_r,
+        output logic [DATA_WIDTH-1:0]   dout_o,
+        output logic                    dout_v_o,
+        output logic                    dout_d_v_o,
+        output logic                    dout_b1_v_o,
+        output logic                    dout_b2_v_o,
+        input  logic                    north_dout_r_i,
+        input  logic                    east_dout_r_i,
+        input  logic                    south_dout_r_i,
+        input  logic                    west_dout_r_i,
 
         // Configuration
-        input  logic [107:0]            config_bits,
-        input  logic [  1:0]            enables
+        input  logic [107:0]            conf_bits_i,
+        input  logic [  1:0]            eb_en_i
     );
 
     // Config signals
@@ -63,19 +63,19 @@ module PC_superpolyvalent
     logic dout_r;
 
     // Configuration decoding
-    assign mux_sel_1        = config_bits[2:0];
-    assign mux_sel_2        = config_bits[5:3];
-    assign mux_sel_c        = config_bits[7:6];
-    assign feedback         = config_bits[8];
-    assign alu_sel          = config_bits[12:9];
-    assign cmp_sel          = config_bits[13];
-    assign out_sel          = config_bits[15:14];
-    assign mask_fs          = config_bits[21:16];
-    assign jm_mode          = config_bits[23:22];
-    assign initial_valid    = config_bits[24];
-    assign initial_data     = DATA_WIDTH'(signed'(config_bits[59:28]));
-    assign I1_const         = DATA_WIDTH'(signed'(config_bits[91:60]));
-    assign delay_value      = config_bits[107:92];
+    assign mux_sel_1        = conf_bits_i[2:0];
+    assign mux_sel_2        = conf_bits_i[5:3];
+    assign mux_sel_c        = conf_bits_i[7:6];
+    assign feedback         = conf_bits_i[8];
+    assign alu_sel          = conf_bits_i[12:9];
+    assign cmp_sel          = conf_bits_i[13];
+    assign out_sel          = conf_bits_i[15:14];
+    assign mask_fs          = conf_bits_i[21:16];
+    assign jm_mode          = conf_bits_i[23:22];
+    assign initial_valid    = conf_bits_i[24];
+    assign initial_data     = DATA_WIDTH'(signed'(conf_bits_i[59:28]));
+    assign I1_const         = DATA_WIDTH'(signed'(conf_bits_i[91:60]));
+    assign delay_value      = conf_bits_i[107:92];
     
     // Data path 1
     mux
@@ -85,9 +85,9 @@ module PC_superpolyvalent
     )
     MUX_1
     (
-        .sel        (   mux_sel_1                                                   ),
-        .mux_in     ( { dout, I1_const, west_din, south_din, east_din, north_din }  ),
-        .mux_out    (   EB_din_1                                                    )
+        .sel_i      (   mux_sel_1                                                   ),
+        .mux_i      ( { dout_o, I1_const, west_din_i, south_din_i, east_din_i, north_din_i }  ),
+        .mux_o      (   EB_din_1                                                    )
     );
 
     mux
@@ -97,26 +97,26 @@ module PC_superpolyvalent
     )
     MUX_1_v
     (
-        .sel        (   mux_sel_1                                                           ),
-        .mux_in     ( { dout_v, 1'b1, west_din_v, south_din_v, east_din_v, north_din_v }    ),
-        .mux_out    (   EB_din_1_v                                                          )
+        .sel_i      (   mux_sel_1                                                           ),
+        .mux_i      ( { dout_v_o, 1'b1, west_din_v_i, south_din_v_i, east_din_v_i, north_din_v_i }    ),
+        .mux_o      (   EB_din_1_v                                                          )
     );
 
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH    )
     )
     REG_1
     (
-        .clk        ( clk           ),
-        .rst_n      ( rst_n         ),
-        .enable     ( enables[0]    ),
-        .din        ( EB_din_1      ),
-        .din_v      ( EB_din_1_v    ),
-        .din_r      ( din_1_r       ),
-        .dout       ( jm_din_1      ),
-        .dout_v     ( jm_din_1_v    ),
-        .dout_r     ( jm_din_1_r    )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_en_i[0]    ),
+        .din_i      ( EB_din_1      ),
+        .din_v_i    ( EB_din_1_v    ),
+        .din_r_o    ( din_1_r_o     ),
+        .dout_o     ( jm_din_1      ),
+        .dout_v_o   ( jm_din_1_v    ),
+        .dout_r_i   ( jm_din_1_r    )
     );
 
     // Data path 2
@@ -127,9 +127,9 @@ module PC_superpolyvalent
     )
     MUX_2
     (
-        .sel        (   mux_sel_2                                                   ),
-        .mux_in     ( { dout, I1_const, west_din, south_din, east_din, north_din }  ),
-        .mux_out    (   EB_din_2                                                    )
+        .sel_i      (   mux_sel_2                                                   ),
+        .mux_i      ( { dout_o, I1_const, west_din_i, south_din_i, east_din_i, north_din_i }  ),
+        .mux_o      (   EB_din_2                                                    )
     );
 
     mux
@@ -139,26 +139,26 @@ module PC_superpolyvalent
     )
     MUX_2_v
     (
-        .sel        (   mux_sel_2                                                           ),
-        .mux_in     ( { dout_v, 1'b1, west_din_v, south_din_v, east_din_v, north_din_v }    ),
-        .mux_out    (   EB_din_2_v                                                          )
+        .sel_i      (   mux_sel_2                                                           ),
+        .mux_i      ( { dout_v_o, 1'b1, west_din_v_i, south_din_v_i, east_din_v_i, north_din_v_i }    ),
+        .mux_o      (   EB_din_2_v                                                          )
     );
 
-    FF_rv
+    elastic_buffer
     #(
         .DATA_WIDTH ( DATA_WIDTH )
     )
     REG_2
     (
-        .clk        ( clk           ),
-        .rst_n      ( rst_n         ),
-        .enable     ( enables[0]    ),
-        .din        ( EB_din_2      ),
-        .din_v      ( EB_din_2_v    ),
-        .din_r      ( din_2_r       ),
-        .dout       ( jm_din_2      ),
-        .dout_v     ( jm_din_2_v    ),
-        .dout_r     ( jm_din_2_r    )
+        .clk_i,
+        .rst_ni,
+        .en_i       ( eb_en_i[0]    ),
+        .din_i      ( EB_din_2      ),
+        .din_v_i    ( EB_din_2_v    ),
+        .din_r_o    ( din_2_r_o     ),
+        .dout_o     ( jm_din_2      ),
+        .dout_v_o   ( jm_din_2_v    ),
+        .dout_r_i   ( jm_din_2_r    )
     );
 
     // Control path
@@ -169,9 +169,9 @@ module PC_superpolyvalent
     )
     MUX_C
     (
-        .sel        (   mux_sel_c                                               ),
-        .mux_in     ( { west_din[0], south_din[0], east_din[0], north_din[0] }  ),
-        .mux_out    (   jm_cin                                                )
+        .sel_i      (   mux_sel_c                                               ),
+        .mux_i      ( { west_din_i[0], south_din_i[0], east_din_i[0], north_din_i[0] }  ),
+        .mux_o      (   jm_cin                                                )
     );
 
     mux
@@ -181,9 +181,9 @@ module PC_superpolyvalent
     )
     MUX_C_v
     (
-        .sel        (   mux_sel_c                                           ),
-        .mux_in     ( { west_din_v, south_din_v, east_din_v, north_din_v }  ),
-        .mux_out    (   jm_cin_v                                            )
+        .sel_i      (   mux_sel_c                                           ),
+        .mux_i      ( { west_din_v_i, south_din_v_i, east_din_v_i, north_din_v_i }  ),
+        .mux_o      (   jm_cin_v                                            )
     );
 
     // Data path out    
@@ -193,21 +193,21 @@ module PC_superpolyvalent
     )
     join_merge_inst
     (
-        .din_1          ( jm_din_1      ),
-        .din_1_v        ( jm_din_1_v    ),
-        .din_1_r        ( jm_din_1_r    ),
-        .din_2          ( jm_din_2      ),
-        .din_2_v        ( jm_din_2_v    ),
-        .din_2_r        ( jm_din_2_r    ),
-        .cin            ( jm_cin        ),
-        .cin_v          ( jm_cin_v      ),
-        .cin_r          ( cin_r         ),
-        .dout_1         ( jm_dout_1     ),
-        .dout_2         ( jm_dout_2     ),
-        .cout           ( jm_cout       ),
-        .dout_v         ( jm_dout_v     ),
-        .dout_r         ( dout_r        ),
-        .mode           ( jm_mode       )
+        .mode_i         ( jm_mode       ),
+        .din_1_i        ( jm_din_1      ),
+        .din_1_v_i      ( jm_din_1_v    ),
+        .din_1_r_o      ( jm_din_1_r    ),
+        .din_2_i        ( jm_din_2      ),
+        .din_2_v_i      ( jm_din_2_v    ),
+        .din_2_r_o      ( jm_din_2_r    ),
+        .cin_i          ( jm_cin        ),
+        .cin_v_i        ( jm_cin_v      ),
+        .cin_r_o        ( cin_r_o       ),
+        .dout_1_o       ( jm_dout_1     ),
+        .dout_2_o       ( jm_dout_2     ),
+        .cout_o         ( jm_cout       ),
+        .out_v_o        ( jm_dout_v     ),
+        .out_r_i        ( dout_r        )
     );
 
     // Data path
@@ -217,41 +217,41 @@ module PC_superpolyvalent
     )
     FU_data
     (
-        .clk            ( clk           ),
-        .rst_n          ( rst_n         ),
-        .enable         ( jm_dout_v && dout_r ),
-        .din_1          ( jm_dout_1     ),
-        .din_2          ( jm_dout_2     ),
-        .cin            ( jm_cout       ),
-        .dout           ( dout          ),
-        .initial_data   ( initial_data  ),
-        .feedback       ( feedback      ),
-        .alu_sel        ( alu_sel       ),
-        .cmp_sel        ( cmp_sel       ),
-        .out_sel        ( out_sel       )
+        .clk_i,
+        .rst_ni,
+        .en_i           ( jm_dout_v && dout_r   ),
+        .initial_data_i ( initial_data          ),
+        .feedback_i     ( feedback              ),
+        .alu_sel_i      ( alu_sel               ),
+        .cmp_sel_i      ( cmp_sel               ),
+        .out_sel_i      ( out_sel               ),
+        .din_1_i        ( jm_dout_1             ),
+        .din_2_i        ( jm_dout_2             ),
+        .cin_i          ( jm_cout               ),
+        .dout_o         ( dout_o                )
     );
 
     // Control path
     FU_control_superpolyvalent FU_control
     (
-        .clk            ( clk           ),
-        .rst_n          ( rst_n         ),
-        .cin            ( jm_cout       ),
-        .in_v           ( jm_dout_v     ),
-        .in_r           ( dout_r        ),
-        .out_v          ( dout_v        ),
-        .out_d_v        ( dout_d_v      ),
-        .out_b1_v       ( dout_b1_v     ),
-        .out_b2_v       ( dout_b2_v     ),
-        .din_1_r        ( din_1_r       ),
-        .din_2_r        ( din_2_r       ),
-        .east_dout_r    ( east_dout_r   ),
-        .west_dout_r    ( west_dout_r   ),
-        .north_dout_r   ( north_dout_r  ),
-        .south_dout_r   ( south_dout_r  ),
-        .initial_valid  ( initial_valid ),
-        .delay_value    ( delay_value   ),
-        .fork_mask      ( mask_fs       )
+        .clk_i,
+        .rst_ni,
+        .initial_valid_i( initial_valid  ),
+        .delay_value_i  ( delay_value    ),
+        .fork_mask_i    ( mask_fs        ),
+        .cin_i          ( jm_cout        ),
+        .in_v_i         ( jm_dout_v      ),
+        .in_r_o         ( dout_r         ),
+        .out_v_o        ( dout_v_o       ),
+        .out_d_v_o      ( dout_d_v_o     ),
+        .out_b1_v_o     ( dout_b1_v_o    ),
+        .out_b2_v_o     ( dout_b2_v_o    ),
+        .din_1_r_i      ( din_1_r_o      ),
+        .din_2_r_i      ( din_2_r_o      ),
+        .east_dout_r_i  ( east_dout_r_i  ),
+        .west_dout_r_i  ( west_dout_r_i  ),
+        .north_dout_r_i ( north_dout_r_i ),
+        .south_dout_r_i ( south_dout_r_i )
     );
 
 endmodule

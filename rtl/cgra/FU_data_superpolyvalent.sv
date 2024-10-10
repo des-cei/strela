@@ -9,27 +9,29 @@ module FU_data_superpolyvalent
     )
     (
         // Clock and reset
-        input  logic                        clk_i,
-        input  logic                        rst_ni,
+        input  logic                    clk_i,
+        input  logic                    rst_ni,
+        input  logic                    clr_i,
 
         // Control
-        input  logic                        en_i,
+        input  logic                    en_i,
 
         // Configuration
-        input  logic [DATA_WIDTH-1:0]       initial_data_i,
-        input  logic                        feedback_i,
-        input  logic [3:0]                  alu_sel_i,
-        input  logic                        cmp_sel_i,
-        input  logic [1:0]                  out_sel_i,
+        input  logic [DATA_WIDTH-1:0]   initial_data_i,
+        input  logic                    feedback_i,
+        input  logic [3:0]              alu_sel_i,
+        input  logic                    cmp_sel_i,
+        input  logic [1:0]              out_sel_i,
 
         // Data and control inputs
-        input  logic [DATA_WIDTH-1:0]       din_1_i,
-        input  logic [DATA_WIDTH-1:0]       din_2_i,
-        input  logic                        cin_i,
+        input  logic [DATA_WIDTH-1:0]   din_1_i,
+        input  logic [DATA_WIDTH-1:0]   din_2_i,
+        input  logic                    cin_i,
 
         // Data and control output
-        output logic [DATA_WIDTH-1:0]       dout_o
+        output logic [DATA_WIDTH-1:0]   dout_o
     );
+    // synopsys sync_set_reset clr_i
 
     localparam logic [DATA_WIDTH-2:0] ZEROS = '0; 
 
@@ -80,15 +82,20 @@ module FU_data_superpolyvalent
     end
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
-        if(!rst_ni) begin
+        if (!rst_ni) begin
             dout_o <= '0;
             initial_load <= 1'b0;
         end else begin
-            if(!initial_load) begin
-                dout_o <= initial_data_i;
-                initial_load <= 1'b1;
-            end else if(en_i) begin
-                dout_o <= pre_dout;
+            if (clr_i) begin
+                dout_o <= '0;
+                initial_load <= 1'b0;
+            end else begin
+                if (!initial_load) begin
+                    dout_o <= initial_data_i;
+                    initial_load <= 1'b1;
+                end else if (en_i) begin
+                    dout_o <= pre_dout;
+                end
             end
         end
     end

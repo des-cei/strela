@@ -11,6 +11,7 @@ module elastic_buffer
         // Clock and reset
         input  logic                    clk_i,
         input  logic                    rst_ni,
+        input  logic                    clr_i,
 
         // Control
         input  logic                    en_i,
@@ -25,19 +26,25 @@ module elastic_buffer
         output logic                    dout_v_o,
         input  logic                    dout_r_i
     );
+    // synopsys sync_set_reset clr_i
 
     logic [DATA_WIDTH-1 : 0] data_0, data_1;
     logic valid_0, valid_1;
     logic areg, vaux;
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
-        if(!rst_ni) begin
+        if (!rst_ni) begin
             data_0  <= '0;
             data_1  <= '0;
             valid_0 <= 1'b0;
             valid_1 <= 1'b0;
         end else begin
-            if (en_i && areg) begin
+            if (clr_i) begin
+                data_0  <= '0;
+                data_1  <= '0;
+                valid_0 <= 1'b0;
+                valid_1 <= 1'b0;
+            end else if (en_i && areg) begin
                 data_0  <= din_i;
                 data_1  <= data_0;
                 valid_0 <= din_v_i;
@@ -47,10 +54,12 @@ module elastic_buffer
     end
 
     always_ff @(posedge clk_i or negedge rst_ni) begin
-        if(!rst_ni) begin
+        if (!rst_ni) begin
             areg <= 1'b0;
         end else begin
-            if(en_i) begin
+            if (clr_i) begin
+                areg <= 1'b0;
+            end else if (en_i) begin
                 areg <= dout_r_i || !vaux;
             end
         end

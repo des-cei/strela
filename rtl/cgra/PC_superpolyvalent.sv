@@ -11,6 +11,7 @@ module PC_superpolyvalent
         // Clock and reset
         input  logic                    clk_i,
         input  logic                    rst_ni,
+        input  logic                    clr_i,
 
         // Input data
         input  logic [DATA_WIDTH-1:0]   north_din_i,
@@ -40,6 +41,7 @@ module PC_superpolyvalent
         input  logic [107:0]            conf_bits_i,
         input  logic [  1:0]            eb_en_i
     );
+    // synopsys sync_set_reset clr_i
 
     // Config signals
     logic [2:0]             mux_sel_1, mux_sel_2;
@@ -110,6 +112,7 @@ module PC_superpolyvalent
     (
         .clk_i,
         .rst_ni,
+        .clr_i,
         .en_i       ( eb_en_i[0]    ),
         .din_i      ( EB_din_1      ),
         .din_v_i    ( EB_din_1_v    ),
@@ -152,6 +155,7 @@ module PC_superpolyvalent
     (
         .clk_i,
         .rst_ni,
+        .clr_i,
         .en_i       ( eb_en_i[0]    ),
         .din_i      ( EB_din_2      ),
         .din_v_i    ( EB_din_2_v    ),
@@ -219,6 +223,7 @@ module PC_superpolyvalent
     (
         .clk_i,
         .rst_ni,
+        .clr_i,
         .en_i           ( jm_dout_v && dout_r   ),
         .initial_data_i ( initial_data          ),
         .feedback_i     ( feedback              ),
@@ -236,6 +241,7 @@ module PC_superpolyvalent
     (
         .clk_i,
         .rst_ni,
+        .clr_i,
         .initial_valid_i( initial_valid  ),
         .delay_value_i  ( delay_value    ),
         .fork_mask_i    ( mask_fs        ),

@@ -18,7 +18,7 @@ module mmio_interface
 
   // Control signals
   output logic        start_o,
-  output logic        clr_conf_o,
+  output logic        conf_change_o,
 
   // Status signals
   input logic         exec_done_i,
@@ -31,7 +31,6 @@ module mmio_interface
 
   // Input Memory Nodes
   output logic [31:0] conf_addr_o,
-  output logic [15:0] conf_size_o,
   output logic [31:0] imn_addr_o    [ INPUT_NODES-1:0],
   output logic [15:0] imn_size_o    [ INPUT_NODES-1:0],
   output logic [15:0] imn_stride_o  [ INPUT_NODES-1:0],
@@ -63,7 +62,7 @@ module mmio_interface
 
   // Control signals
   assign start_o = reg2hw.ctrl.start.q;
-  assign clr_conf_o = reg2hw.ctrl.clr_conf.q;
+  assign conf_change_o = reg2hw.ctrl.clr_conf.q;
   
   // Reset some control signals
   assign hw2reg.ctrl.start.de = reg2hw.ctrl.start.q;
@@ -99,7 +98,6 @@ module mmio_interface
 
   // Input Memory Nodes
   assign conf_addr_o = reg2hw.conf_addr.q;
-  assign conf_size_o = reg2hw.conf_size.q;
   assign imn_addr_o[0]    = reg2hw.imn_0_addr.q;
   assign imn_size_o[0]    = reg2hw.imn_0_param.imn_0_size.q;
   assign imn_stride_o[0]  = reg2hw.imn_0_param.imn_0_stride.q;
@@ -115,8 +113,6 @@ module mmio_interface
 
   assign hw2reg.conf_addr.de = reg2hw.ctrl.clr_param.q;
   assign hw2reg.conf_addr.d  = 1'b0;
-  assign hw2reg.conf_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.conf_size.d  = 1'b0;
   assign hw2reg.imn_0_addr.de = reg2hw.ctrl.clr_param.q;
   assign hw2reg.imn_0_addr.d  = 1'b0;
   assign hw2reg.imn_0_param.imn_0_size.de = reg2hw.ctrl.clr_param.q;

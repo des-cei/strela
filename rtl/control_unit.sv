@@ -12,37 +12,42 @@ module control_unit
 
   // Control input
   input  logic  start_i,
-  input  logic  clear_bs_i,
-  input  logic  change_bs_i,
-  input  logic  bs_done_i,
-  input  logic  execute_done_i,
+  input  logic  conf_change_i,
+  input  logic  conf_done_i,
+  input  logic  mn_done_i,
 
   // Control output
-  output logic  clear_o,
-  output logic  clear_core_o,
-  output logic  execute_o,
-  output logic  bs_needed_o,
+  output logic  clr_mn_o,
+  output logic  clr_cgra_o,
+  output logic  conf_needed_o,
+  output logic  exec_o,
+  output logic  intr_o,
 
   // State
   output main_fsm_t state_o
 );
 
   main_fsm_t state, n_state;
-
-  assign state_o = state;
-
-  logic bs_done_reg;
+  logic conf_done_reg;
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
-    if(~rst_ni) begin
-      bs_done_reg <= 1'b0;
+    if (!rst_ni) begin
+      conf_done_reg <= 1'b0;
+    end else begin
+      if (conf_change_i) begin
+        conf_done_reg <= 1'b0;
+      end else if (conf_done_i) begin
+        conf_done_reg <= 1'b1;
+      end
+    end
+  end
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
       state <= S_MAIN_IDLE;
     end else begin
-      state <= n_state;
-      if(clear_bs_i || change_bs_i) begin
-        bs_done_reg <= 1'b0;
-      end else if(bs_done_i) begin
-        bs_done_reg <= 1'b1;
+      if (start_i || state != S_MAIN_IDLE) begin
+        state <= n_state;
       end
     end
   end
@@ -50,14 +55,12 @@ module control_unit
   always_comb
   begin
     n_state    = S_MAIN_IDLE;
-    clear_o       = 1'b1;
-    execute_o     = 1'b0; 
 
     unique case (state)
       S_MAIN_IDLE:
       begin
-        if(start_i) begin
-          if(bs_done_reg) begin
+        if (start_i) begin
+          if (conf_done_reg) begin
             n_state = S_MAIN_EXEC;
           end else begin
             n_state = S_MAIN_WAIT;
@@ -68,7 +71,7 @@ module control_unit
       end
       S_MAIN_WAIT: 
       begin
-        if(bs_done_i) begin // bs_done_reg??
+        if (conf_done_i) begin // conf_done_reg??
           n_state = S_MAIN_EXEC;
         end else begin
           n_state = S_MAIN_WAIT;
@@ -76,23 +79,25 @@ module control_unit
       end
       S_MAIN_EXEC:
       begin
-        if(execute_done_i) begin
+        if (mn_done_i) begin
           n_state = S_MAIN_DONE;
         end else begin
           n_state = S_MAIN_EXEC;
         end
-        execute_o = 1'b1;
       end
       S_MAIN_DONE:
       begin
         n_state = S_MAIN_IDLE;
-        clear_o = 1'b0;
       end
       default: n_state = S_MAIN_IDLE;
     endcase
   end
 
-  assign clear_core_o = !(bs_done_i & !bs_done_reg) & clear_o;
-  assign bs_needed_o = !bs_done_reg;
+  assign exec_o = state == S_MAIN_EXEC;
+  assign intr_o = state == S_MAIN_DONE;
+  assign clr_mn_o = state == S_MAIN_DONE;
+  assign clr_cgra_o = (conf_done_i & !conf_done_reg) || state == S_MAIN_DONE;
+  assign conf_needed_o = !conf_done_reg;
+  assign state_o = state;
 
 endmodule

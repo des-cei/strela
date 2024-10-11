@@ -90,16 +90,6 @@
       ]
     }
 
-    { name:     "CONF_SIZE",
-      desc:     "STRELA configuration size register",
-      resval:   0,
-      swaccess: "rw",
-      hwaccess: "hrw",
-      fields: [
-        { bits: "15:0", name: "CONF_SIZE", desc: "STRELA configuration size register" }
-      ]
-    }
-
     { name:     "IMN_0_ADDR",
       desc:     "STRELA Input Memory Node 0 address register",
       resval:   0,

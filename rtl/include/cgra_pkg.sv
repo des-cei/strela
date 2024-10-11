@@ -8,19 +8,12 @@ package cgra_pkg;
   // General configuration
   localparam INPUT_NODES  = 4;
   localparam OUTPUT_NODES = 4;
-  localparam NODES        = INPUT_NODES + OUTPUT_NODES + 1;
+  localparam NODES        = INPUT_NODES + OUTPUT_NODES;
 
-  // MMIO registers
-  localparam CONFIG_REG_N           = 4 + INPUT_NODES*2 + OUTPUT_NODES*2;
-  localparam CONTROL_REG_ADDR       = 8'h0;
-  localparam CONFIG_ADDR_ADDR       = 8'h4;
-  localparam CONFIG_SIZE_ADDR       = 8'h8;
-  localparam SEW_ADDR               = 8'hC;
-  localparam INPUT_REGS_BASE_ADDR   = 8'h10;
-  localparam OUTPUT_REGS_BASE_ADDR  = 8'h50;
-  localparam CTR_BS_REG_ADDR        = 8'h90;
-  localparam CTR_EXEC_REG_ADDR      = 8'h94;
-  localparam CTR_STALL_REG_ADDR     = 8'h98;
+  // Configuration parameters
+  localparam logic [15:0] CONF_STRIDE = 16'd4;
+  localparam logic [15:0] CONF_SIZE = 16'd80;
+  localparam logic [3:0][31:0] CONF_OFFSET = {32'd240, 32'd160, 32'd80, 32'd0};
 
   // Memory parameters
   localparam WORST_MEM_LATENCY = 4;

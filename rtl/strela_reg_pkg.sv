@@ -52,10 +52,6 @@ package strela_reg_pkg;
   } strela_reg2hw_conf_addr_reg_t;
 
   typedef struct packed {
-    logic [15:0] q;
-  } strela_reg2hw_conf_size_reg_t;
-
-  typedef struct packed {
     logic [31:0] q;
   } strela_reg2hw_imn_0_addr_reg_t;
 
@@ -199,11 +195,6 @@ package strela_reg_pkg;
   } strela_hw2reg_conf_addr_reg_t;
 
   typedef struct packed {
-    logic [15:0] d;
-    logic        de;
-  } strela_hw2reg_conf_size_reg_t;
-
-  typedef struct packed {
     logic [31:0] d;
     logic        de;
   } strela_hw2reg_imn_0_addr_reg_t;
@@ -309,13 +300,12 @@ package strela_reg_pkg;
 
   // Register -> HW type
   typedef struct packed {
-    strela_reg2hw_ctrl_reg_t ctrl; // [628:624]
-    strela_reg2hw_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles; // [623:592]
-    strela_reg2hw_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles; // [591:560]
-    strela_reg2hw_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles; // [559:528]
-    strela_reg2hw_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles; // [527:496]
-    strela_reg2hw_conf_addr_reg_t conf_addr; // [495:464]
-    strela_reg2hw_conf_size_reg_t conf_size; // [463:448]
+    strela_reg2hw_ctrl_reg_t ctrl; // [612:608]
+    strela_reg2hw_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles; // [607:576]
+    strela_reg2hw_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles; // [575:544]
+    strela_reg2hw_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles; // [543:512]
+    strela_reg2hw_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles; // [511:480]
+    strela_reg2hw_conf_addr_reg_t conf_addr; // [479:448]
     strela_reg2hw_imn_0_addr_reg_t imn_0_addr; // [447:416]
     strela_reg2hw_imn_0_param_reg_t imn_0_param; // [415:384]
     strela_reg2hw_imn_1_addr_reg_t imn_1_addr; // [383:352]
@@ -336,14 +326,13 @@ package strela_reg_pkg;
 
   // HW -> register type
   typedef struct packed {
-    strela_hw2reg_ctrl_reg_t ctrl; // [663:654]
-    strela_hw2reg_status_reg_t status; // [653:650]
-    strela_hw2reg_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles; // [649:617]
-    strela_hw2reg_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles; // [616:584]
-    strela_hw2reg_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles; // [583:551]
-    strela_hw2reg_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles; // [550:518]
-    strela_hw2reg_conf_addr_reg_t conf_addr; // [517:485]
-    strela_hw2reg_conf_size_reg_t conf_size; // [484:468]
+    strela_hw2reg_ctrl_reg_t ctrl; // [646:637]
+    strela_hw2reg_status_reg_t status; // [636:633]
+    strela_hw2reg_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles; // [632:600]
+    strela_hw2reg_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles; // [599:567]
+    strela_hw2reg_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles; // [566:534]
+    strela_hw2reg_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles; // [533:501]
+    strela_hw2reg_conf_addr_reg_t conf_addr; // [500:468]
     strela_hw2reg_imn_0_addr_reg_t imn_0_addr; // [467:435]
     strela_hw2reg_imn_0_param_reg_t imn_0_param; // [434:401]
     strela_hw2reg_imn_1_addr_reg_t imn_1_addr; // [400:368]
@@ -370,23 +359,22 @@ package strela_reg_pkg;
   parameter logic [BlockAw-1:0] STRELA_PERF_CTR_CONF_CYCLES_OFFSET = 7'h 10;
   parameter logic [BlockAw-1:0] STRELA_PERF_CTR_STALL_CYCLES_OFFSET = 7'h 14;
   parameter logic [BlockAw-1:0] STRELA_CONF_ADDR_OFFSET = 7'h 18;
-  parameter logic [BlockAw-1:0] STRELA_CONF_SIZE_OFFSET = 7'h 1c;
-  parameter logic [BlockAw-1:0] STRELA_IMN_0_ADDR_OFFSET = 7'h 20;
-  parameter logic [BlockAw-1:0] STRELA_IMN_0_PARAM_OFFSET = 7'h 24;
-  parameter logic [BlockAw-1:0] STRELA_IMN_1_ADDR_OFFSET = 7'h 28;
-  parameter logic [BlockAw-1:0] STRELA_IMN_1_PARAM_OFFSET = 7'h 2c;
-  parameter logic [BlockAw-1:0] STRELA_IMN_2_ADDR_OFFSET = 7'h 30;
-  parameter logic [BlockAw-1:0] STRELA_IMN_2_PARAM_OFFSET = 7'h 34;
-  parameter logic [BlockAw-1:0] STRELA_IMN_3_ADDR_OFFSET = 7'h 38;
-  parameter logic [BlockAw-1:0] STRELA_IMN_3_PARAM_OFFSET = 7'h 3c;
-  parameter logic [BlockAw-1:0] STRELA_OMN_0_ADDR_OFFSET = 7'h 40;
-  parameter logic [BlockAw-1:0] STRELA_OMN_0_SIZE_OFFSET = 7'h 44;
-  parameter logic [BlockAw-1:0] STRELA_OMN_1_ADDR_OFFSET = 7'h 48;
-  parameter logic [BlockAw-1:0] STRELA_OMN_1_SIZE_OFFSET = 7'h 4c;
-  parameter logic [BlockAw-1:0] STRELA_OMN_2_ADDR_OFFSET = 7'h 50;
-  parameter logic [BlockAw-1:0] STRELA_OMN_2_SIZE_OFFSET = 7'h 54;
-  parameter logic [BlockAw-1:0] STRELA_OMN_3_ADDR_OFFSET = 7'h 58;
-  parameter logic [BlockAw-1:0] STRELA_OMN_3_SIZE_OFFSET = 7'h 5c;
+  parameter logic [BlockAw-1:0] STRELA_IMN_0_ADDR_OFFSET = 7'h 1c;
+  parameter logic [BlockAw-1:0] STRELA_IMN_0_PARAM_OFFSET = 7'h 20;
+  parameter logic [BlockAw-1:0] STRELA_IMN_1_ADDR_OFFSET = 7'h 24;
+  parameter logic [BlockAw-1:0] STRELA_IMN_1_PARAM_OFFSET = 7'h 28;
+  parameter logic [BlockAw-1:0] STRELA_IMN_2_ADDR_OFFSET = 7'h 2c;
+  parameter logic [BlockAw-1:0] STRELA_IMN_2_PARAM_OFFSET = 7'h 30;
+  parameter logic [BlockAw-1:0] STRELA_IMN_3_ADDR_OFFSET = 7'h 34;
+  parameter logic [BlockAw-1:0] STRELA_IMN_3_PARAM_OFFSET = 7'h 38;
+  parameter logic [BlockAw-1:0] STRELA_OMN_0_ADDR_OFFSET = 7'h 3c;
+  parameter logic [BlockAw-1:0] STRELA_OMN_0_SIZE_OFFSET = 7'h 40;
+  parameter logic [BlockAw-1:0] STRELA_OMN_1_ADDR_OFFSET = 7'h 44;
+  parameter logic [BlockAw-1:0] STRELA_OMN_1_SIZE_OFFSET = 7'h 48;
+  parameter logic [BlockAw-1:0] STRELA_OMN_2_ADDR_OFFSET = 7'h 4c;
+  parameter logic [BlockAw-1:0] STRELA_OMN_2_SIZE_OFFSET = 7'h 50;
+  parameter logic [BlockAw-1:0] STRELA_OMN_3_ADDR_OFFSET = 7'h 54;
+  parameter logic [BlockAw-1:0] STRELA_OMN_3_SIZE_OFFSET = 7'h 58;
 
   // Register index
   typedef enum int {
@@ -397,7 +385,6 @@ package strela_reg_pkg;
     STRELA_PERF_CTR_CONF_CYCLES,
     STRELA_PERF_CTR_STALL_CYCLES,
     STRELA_CONF_ADDR,
-    STRELA_CONF_SIZE,
     STRELA_IMN_0_ADDR,
     STRELA_IMN_0_PARAM,
     STRELA_IMN_1_ADDR,
@@ -417,7 +404,7 @@ package strela_reg_pkg;
   } strela_id_e;
 
   // Register width information to check illegal writes
-  parameter logic [3:0] STRELA_PERMIT [24] = '{
+  parameter logic [3:0] STRELA_PERMIT [23] = '{
     4'b 0001, // index[ 0] STRELA_CTRL
     4'b 0001, // index[ 1] STRELA_STATUS
     4'b 1111, // index[ 2] STRELA_PERF_CTR_TOTAL_CYCLES
@@ -425,23 +412,22 @@ package strela_reg_pkg;
     4'b 1111, // index[ 4] STRELA_PERF_CTR_CONF_CYCLES
     4'b 1111, // index[ 5] STRELA_PERF_CTR_STALL_CYCLES
     4'b 1111, // index[ 6] STRELA_CONF_ADDR
-    4'b 0011, // index[ 7] STRELA_CONF_SIZE
-    4'b 1111, // index[ 8] STRELA_IMN_0_ADDR
-    4'b 1111, // index[ 9] STRELA_IMN_0_PARAM
-    4'b 1111, // index[10] STRELA_IMN_1_ADDR
-    4'b 1111, // index[11] STRELA_IMN_1_PARAM
-    4'b 1111, // index[12] STRELA_IMN_2_ADDR
-    4'b 1111, // index[13] STRELA_IMN_2_PARAM
-    4'b 1111, // index[14] STRELA_IMN_3_ADDR
-    4'b 1111, // index[15] STRELA_IMN_3_PARAM
-    4'b 1111, // index[16] STRELA_OMN_0_ADDR
-    4'b 0011, // index[17] STRELA_OMN_0_SIZE
-    4'b 1111, // index[18] STRELA_OMN_1_ADDR
-    4'b 0011, // index[19] STRELA_OMN_1_SIZE
-    4'b 1111, // index[20] STRELA_OMN_2_ADDR
-    4'b 0011, // index[21] STRELA_OMN_2_SIZE
-    4'b 1111, // index[22] STRELA_OMN_3_ADDR
-    4'b 0011  // index[23] STRELA_OMN_3_SIZE
+    4'b 1111, // index[ 7] STRELA_IMN_0_ADDR
+    4'b 1111, // index[ 8] STRELA_IMN_0_PARAM
+    4'b 1111, // index[ 9] STRELA_IMN_1_ADDR
+    4'b 1111, // index[10] STRELA_IMN_1_PARAM
+    4'b 1111, // index[11] STRELA_IMN_2_ADDR
+    4'b 1111, // index[12] STRELA_IMN_2_PARAM
+    4'b 1111, // index[13] STRELA_IMN_3_ADDR
+    4'b 1111, // index[14] STRELA_IMN_3_PARAM
+    4'b 1111, // index[15] STRELA_OMN_0_ADDR
+    4'b 0011, // index[16] STRELA_OMN_0_SIZE
+    4'b 1111, // index[17] STRELA_OMN_1_ADDR
+    4'b 0011, // index[18] STRELA_OMN_1_SIZE
+    4'b 1111, // index[19] STRELA_OMN_2_ADDR
+    4'b 0011, // index[20] STRELA_OMN_2_SIZE
+    4'b 1111, // index[21] STRELA_OMN_3_ADDR
+    4'b 0011  // index[22] STRELA_OMN_3_SIZE
   };
 
 endpackage

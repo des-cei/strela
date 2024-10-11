@@ -21,32 +21,29 @@ module cgra_top
   input  obi_resp_t [NODES-1:0] masters_resp_i,
 
   // Interrupt
-  output logic                  int_o
+  output logic                  intr_o
 );
 
-  logic start, exec, clr_conf;
-  logic [31:0] config_addr;
-  logic [15:0] config_size;
+  logic start, exec, clr_mn, clr_cgra;
+  logic [31:0] conf_addr;
   logic [31:0] input_addr [INPUT_NODES-1:0];
   logic [15:0] input_size [INPUT_NODES-1:0];
   logic [15:0] input_stride [INPUT_NODES-1:0];
   logic [31:0] omn_addr [OUTPUT_NODES-1:0];
   logic [15:0] omn_size [OUTPUT_NODES-1:0];
 
-  logic clr, clear_core, bs_done, bs_needed, bs_enable;
-  logic [OUTPUT_NODES-1:0]    omn_done;
+  logic conf_needed, conf_change;
+  logic [INPUT_NODES-1:0] conf_done;
+  logic [NODES-1:0] mn_done;
 
-  logic [32*INPUT_NODES-1:0]  din;
-  logic [INPUT_NODES-1:0]     din_v, din_r;
+  logic [32*INPUT_NODES-1:0] din;
+  logic [INPUT_NODES-1:0] din_v, din_r;
   logic [32*OUTPUT_NODES-1:0] dout;
-  logic [OUTPUT_NODES-1:0]    dout_v, dout_r;
+  logic [OUTPUT_NODES-1:0] dout_v, dout_r;
+  logic [3:0] conf_en;
 
-  logic [159:0] kernel_config;
   genvar i;
-
   main_fsm_t state;
-
-  assign int_o = &omn_done;
 
   // MMIO control registers
   mmio_interface mmio_interface_i
@@ -58,12 +55,11 @@ module cgra_top
     .masters_resp_i,
     .masters_req_i  ( masters_req_o ),
     .start_o        ( start         ),
-    .clr_conf_o     ( clr_conf      ),
-    .exec_done_i    ( int_o         ),
-    .conf_done_i    ( bs_done       ),
+    .conf_change_o  ( conf_change   ),
+    .conf_done_i    ( &conf_done    ),
+    .exec_done_i    ( &mn_done      ),
     .state_i        ( state         ),
-    .conf_addr_o    ( config_addr   ),
-    .conf_size_o    ( config_size   ),
+    .conf_addr_o    ( conf_addr     ),
     .imn_addr_o     ( input_addr    ),
     .imn_size_o     ( input_size    ),
     .imn_stride_o   ( input_stride  ),
@@ -74,33 +70,18 @@ module cgra_top
   // Control unit
   control_unit control_unit_i
   (
-    .clk_i          ( clk_i       ),
-    .rst_ni         ( rst_ni      ),
+    .clk_i,
+    .rst_ni,
     .start_i        ( start       ),
-    .clear_bs_i     ( clr_conf    ),
-    .change_bs_i    ( clr_conf    ),
-    .bs_done_i      ( bs_done     ),
-    .execute_done_i ( int_o       ),
-    .clear_o        ( clr         ),
-    .clear_core_o   ( clear_core  ),
-    .execute_o      ( exec        ),
-    .bs_needed_o    ( bs_needed   ),
+    .conf_change_i  ( conf_change ),
+    .conf_done_i    ( &conf_done  ),
+    .mn_done_i      ( &mn_done    ),
+    .clr_mn_o       ( clr_mn      ),
+    .clr_cgra_o     ( clr_cgra    ),
+    .conf_needed_o  ( conf_needed ),
+    .exec_o         ( exec        ),
+    .intr_o,
     .state_o        ( state       )
-  );
-
-  // Config node
-  config_memory_node config_memory_node_i
-  (
-    .clk_i           ( clk_i                    ),
-    .rst_ni          ( rst_ni & clr             ),
-    .masters_resp_i  ( masters_resp_i[NODES-1]  ),
-    .masters_req_o   ( masters_req_o[NODES-1]   ),
-    .execute_i       ( start                    ),
-    .bs_needed_i     ( bs_needed                ),
-    .bs_done_o       ( bs_done                  ),
-    .config_addr_i   ( config_addr              ),
-    .config_size_i   ( config_size              ),
-    .kernel_config_o ( kernel_config            )
   );
 
   // Input Memory Nodes
@@ -108,17 +89,24 @@ module cgra_top
     for(i = 0; i < INPUT_NODES; i++) begin : imn_gen
       input_memory_node input_memory_node_i
       (
-        .clk_i          ( clk_i                 ),
-        .rst_ni         ( rst_ni & clr        ),
-        .execute_i      ( exec               ),
-        .masters_resp_i ( masters_resp_i[i]     ),
-        .masters_req_o  ( masters_req_o[i]      ),
-        .input_addr_i   ( input_addr[i]         ),
-        .input_size_i   ( input_size[i]         ),
-        .input_stride_i ( input_stride[i]       ),
-        .dout_o         ( din[32*(i+1)-1:32*i]  ),
-        .dout_v_o       ( din_v[i]              ),
-        .dout_r_i       ( din_r[i]              )
+        .clk_i,
+        .rst_ni,
+        .clr_i          ( clr_mn                      ),
+        .masters_resp_i ( masters_resp_i[i]           ),
+        .masters_req_o  ( masters_req_o[i]            ),
+        .start_i        ( start                       ),
+        .exec_i         ( exec                        ),
+        .conf_needed_i  ( conf_needed                 ),
+        .conf_addr_i    ( conf_addr + CONF_OFFSET[i]  ),
+        .input_addr_i   ( input_addr[i]               ),
+        .input_size_i   ( input_size[i]               ),
+        .input_stride_i ( input_stride[i]             ),
+        .conf_done_o    ( conf_done[i]                ),
+        .done_o         ( mn_done[i]                  ),
+        .conf_en_o      ( conf_en[i]                  ),
+        .dout_o         ( din[32*(i+1)-1:32*i]        ),
+        .dout_v_o       ( din_v[i]                    ),
+        .dout_r_i       ( din_r[i]                    )
       );
     end
   endgenerate
@@ -130,13 +118,13 @@ module cgra_top
       (
         .clk_i,
         .rst_ni,
-        .clr_i          ( ~clr                            ),
+        .clr_i          ( clr_mn                          ),
         .masters_resp_i ( masters_resp_i[INPUT_NODES + i] ),
         .masters_req_o  ( masters_req_o[ INPUT_NODES + i] ),
         .omn_addr_i     ( omn_addr[i]                     ),
         .omn_size_i     ( omn_size[i]                     ),
         .exec_i         ( exec                            ),
-        .done_o         ( omn_done[i]                     ),
+        .done_o         ( mn_done[INPUT_NODES + i]        ),
         .din_i          ( dout[32*(i+1)-1:32*i]           ),
         .din_v_i        ( dout_v[i]                       ),
         .din_r_o        ( dout_r[i]                       )
@@ -145,23 +133,18 @@ module cgra_top
   endgenerate
 
   // CGRA
-  assign bs_enable = (state == S_MAIN_WAIT);
-
   CGRA cgra_i
   (
-    .clk                ( clk_i               ),
-    .rst_n              ( rst_ni & clear_core ),
-    .clk_bs             ( clk_i               ),
-    .rst_n_bs           ( rst_ni & !clear_bs  ),
-    .data_in            ( din                 ),
-    .data_in_valid      ( din_v               ),
-    .data_in_ready      ( din_r               ),
-    .data_out           ( dout                ),
-    .data_out_valid     ( dout_v              ),
-    .data_out_ready     ( dout_r              ),
-    .config_bitstream   ( kernel_config       ),
-    .bitstream_enable_i ( bs_enable           ),
-    .execute_i          ( exec             )
+    .clk_i,
+    .rst_ni,
+    .clr_i          ( clr_cgra  ),
+    .conf_en_i      ( conf_en   ),
+    .data_in        ( din       ),
+    .data_in_valid  ( din_v     ),
+    .data_in_ready  ( din_r     ),
+    .data_out       ( dout      ),
+    .data_out_valid ( dout_v    ),
+    .data_out_ready ( dout_r    )
   );
 
 endmodule

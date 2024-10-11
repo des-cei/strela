@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-module cgra_top
-  import cgra_pkg::*;
+module strela_top
+  import strela_pkg::*;
   import obi_pkg::*;  
   import reg_pkg::*;
 (

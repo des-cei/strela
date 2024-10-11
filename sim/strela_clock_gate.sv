@@ -2,7 +2,7 @@
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
-module cgra_clock_gate
+module strela_clock_gate
 (
   input  logic clk_i,
   input  logic test_en_i,

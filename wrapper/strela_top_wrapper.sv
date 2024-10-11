@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-module cgra_top_wrapper
-  import cgra_pkg::*;
+module strela_top_wrapper
+  import strela_pkg::*;  
   import obi_pkg::*;
   import reg_pkg::*;
 (
@@ -29,14 +29,14 @@ module cgra_top_wrapper
 
   logic clk_cg;
 
-  cgra_clock_gate clk_gate_logic_i (
+  strela_clock_gate clk_gate_logic_i (
     .clk_i     ( clk_i ),
     .test_en_i ( 1'b0 ),
     .en_i      ( en_i ),
     .clk_o     ( clk_cg )
   );
 
-  cgra_top cgra_top_i (
+  strela_top strela_top_i (
       .clk_i( clk_cg ),
       .rst_ni,
       .reg_req_i,

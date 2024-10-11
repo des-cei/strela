@@ -4,7 +4,7 @@
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
 module mmio_interface
-  import cgra_pkg::*;
+  import strela_pkg::*;
   import reg_pkg::*;
   import obi_pkg::*;
 (

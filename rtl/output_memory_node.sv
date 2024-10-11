@@ -4,7 +4,7 @@
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
 module output_memory_node
-  import cgra_pkg::*;
+  import strela_pkg::*;
   import obi_pkg::*;
   (
     // Clock and reset

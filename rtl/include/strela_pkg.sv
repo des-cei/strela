@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-package cgra_pkg;
+package strela_pkg;
 
   // General configuration
   localparam INPUT_NODES  = 4;

@@ -4,7 +4,7 @@
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
 module control_unit 
-  import cgra_pkg::*;
+  import strela_pkg::*;
 (
   // Clock and reset
   input  logic  clk_i,

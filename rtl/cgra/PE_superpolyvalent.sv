@@ -57,7 +57,7 @@ module PE_superpolyvalent
 
     // Temporal signals
     logic [DATA_WIDTH-1:0]  tmp_south_dout;
-    logic                   tmp_north_buffer_v;
+    logic                   tmp_north_din_v;
     // Buffer
     logic [DATA_WIDTH-1:0]  north_buffer, east_buffer, south_buffer, west_buffer;
     logic                   north_buffer_v, east_buffer_v, south_buffer_v, west_buffer_v;

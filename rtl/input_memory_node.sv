@@ -112,6 +112,8 @@ module input_memory_node
           n_state = S_CONF;
         end else if (exec_i & input_size_i != 0) begin
           n_state = S_MREQ;
+        end else if (exec_i) begin
+          n_state = S_DONE;
         end else begin
           n_state = S_IDLE;
         end        
@@ -130,6 +132,8 @@ module input_memory_node
       begin
         if (exec_i & input_size_i != 0) begin
           n_state = S_MREQ;
+        end else if (exec_i) begin
+          n_state = S_DONE;
         end else begin
           n_state = S_WAIT;
         end

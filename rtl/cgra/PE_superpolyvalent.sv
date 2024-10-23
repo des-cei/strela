@@ -71,14 +71,14 @@ module PE_superpolyvalent
     // Configuration signals
     assign conf_wire = {north_din_i, conf_reg[159:DATA_WIDTH]};
     assign tmp_north_din_v = north_din_v_i && !conf_en_i;
-    assign south_dout_o = conf_en_i ? conf_reg[DATA_WIDTH-1:0] : tmp_south_dout;
+    assign south_dout_o = conf_en_i ? north_din_i : tmp_south_dout;
 
     // Configuration registers
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             conf_reg <= 0;
         end else begin
-            if (conf_en_i) begin
+            if (conf_en_i && conf_cnt < 5) begin
                 conf_reg <= conf_wire;
             end
         end

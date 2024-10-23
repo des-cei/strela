@@ -85,11 +85,11 @@ module mmio_interface
   // Performance counters
   assign hw2reg.perf_ctr_total_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || reg2hw.ctrl.perf_ctr_en.q;
   assign hw2reg.perf_ctr_total_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_total_cycles.q + 1;
-  assign hw2reg.perf_ctr_conf_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && state_i == S_MAIN_WAIT;
+  assign hw2reg.perf_ctr_conf_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && state_i == S_MAIN_WAIT);
   assign hw2reg.perf_ctr_conf_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_conf_cycles.q + 1;
-  assign hw2reg.perf_ctr_exec_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && state_i == S_MAIN_EXEC;
+  assign hw2reg.perf_ctr_exec_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && state_i == S_MAIN_EXEC);
   assign hw2reg.perf_ctr_exec_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_exec_cycles.q + 1;
-  assign hw2reg.perf_ctr_stall_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q) && |stalls;
+  assign hw2reg.perf_ctr_stall_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && |stalls);
   assign hw2reg.perf_ctr_stall_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_stall_cycles.q + 1;
 
   for(genvar i = 0; i < NODES; i++) begin

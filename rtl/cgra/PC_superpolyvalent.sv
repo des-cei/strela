@@ -156,7 +156,7 @@ module PC_superpolyvalent
         .clk_i,
         .rst_ni,
         .clr_i,
-        .en_i       ( eb_en_i[0]    ),
+        .en_i       ( eb_en_i[1]    ),
         .din_i      ( EB_din_2      ),
         .din_v_i    ( EB_din_2_v    ),
         .din_r_o    ( din_2_r_o     ),

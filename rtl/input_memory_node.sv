@@ -55,7 +55,7 @@ module input_memory_node
   logic transaction, change_mode;
 
   logic [FIFO_PTR_WIDTH-1:0] data_count;
-  logic full, empty, re;
+  logic empty, re;
 
   assign base_addr = conf_needed_i ? conf_addr_i : input_addr_i;
   assign n_conf_addr_offset = addr_offset + CONF_STRIDE;
@@ -170,7 +170,7 @@ module input_memory_node
     .usage_o      ( data_count            ),
     .data_i       ( masters_resp_i.rdata  ),
     .push_i       ( masters_resp_i.rvalid ),
-    .full_o       ( full                  ),
+    .full_o       (                       ),
     .data_o       ( dout_o                ),
     .pop_i        ( re                    ),
     .empty_o      ( empty                 )

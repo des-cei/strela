@@ -4,10 +4,9 @@
 
 `verilator_config
 
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/csr.sv" -match "Bits of signal are not used: 'reg_req_i'[67:64]"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/input_memory_node.sv" -match "Signal is not used: 'full'"
 lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/output_memory_node.sv" -match "Bits of signal are not used: 'masters_resp_i'[32:0]"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/output_memory_node.sv" -match "Signal is not used: 'data_count'"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/cgra/CGRA.sv" -match "Bits of signal are not used: 'config_bitstream'[153]"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/cgra/PC_superpolyvalent.sv" -match "Bits of signal are not used: 'config_bits'[27:25]"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/cgra/PC_superpolyvalent.sv" -match "Bits of signal are not used: 'enables'[1]"
+lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/cgra/PC_superpolyvalent.sv" -match "Bits of signal are not used: 'conf_bits_i'[27:25]"
+lint_off -rule DECLFILENAME -file "../../../hw/vendor/cei_upm_strela/rtl/strela_reg_top.sv"
+lint_off -rule WIDTH -file "../../../hw/vendor/cei_upm_strela/rtl/strela_reg_top.sv" -match "Operator ASSIGNW expects *"
+lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/mmio_interface.sv" -match "Bits of signal are not used: 'reg2hw'*"
+lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/mmio_interface.sv" -match "Bits of signal are not used: 'reg2hw'*"

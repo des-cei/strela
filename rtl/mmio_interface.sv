@@ -84,13 +84,13 @@ module mmio_interface
 
   // Performance counters
   assign hw2reg.perf_ctr_total_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || reg2hw.ctrl.perf_ctr_en.q;
-  assign hw2reg.perf_ctr_total_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_total_cycles.q + 1;
+  assign hw2reg.perf_ctr_total_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? '0 : reg2hw.perf_ctr_total_cycles.q + 1;
   assign hw2reg.perf_ctr_conf_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && state_i == S_MAIN_WAIT);
-  assign hw2reg.perf_ctr_conf_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_conf_cycles.q + 1;
+  assign hw2reg.perf_ctr_conf_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? '0 : reg2hw.perf_ctr_conf_cycles.q + 1;
   assign hw2reg.perf_ctr_exec_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && state_i == S_MAIN_EXEC);
-  assign hw2reg.perf_ctr_exec_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_exec_cycles.q + 1;
+  assign hw2reg.perf_ctr_exec_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? '0 : reg2hw.perf_ctr_exec_cycles.q + 1;
   assign hw2reg.perf_ctr_stall_cycles.de = reg2hw.ctrl.perf_ctr_rst.q || (reg2hw.ctrl.perf_ctr_en.q && |stalls);
-  assign hw2reg.perf_ctr_stall_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? 0 : reg2hw.perf_ctr_stall_cycles.q + 1;
+  assign hw2reg.perf_ctr_stall_cycles.d  = reg2hw.ctrl.perf_ctr_rst.q ? '0 : reg2hw.perf_ctr_stall_cycles.q + 1;
 
   for(genvar i = 0; i < NODES; i++) begin
     assign stalls[i] = masters_req_i[i].req ? !masters_resp_i[i].gnt : 1'b0;
@@ -112,31 +112,31 @@ module mmio_interface
   assign imn_stride_o[3]  = reg2hw.imn_3_param.imn_3_stride.q;
 
   assign hw2reg.conf_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.conf_addr.d  = 1'b0;
+  assign hw2reg.conf_addr.d  = '0;
   assign hw2reg.imn_0_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_0_addr.d  = 1'b0;
+  assign hw2reg.imn_0_addr.d  = '0;
   assign hw2reg.imn_0_param.imn_0_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_0_param.imn_0_size.d  = 1'b0;
+  assign hw2reg.imn_0_param.imn_0_size.d  = '0;
   assign hw2reg.imn_0_param.imn_0_stride.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_0_param.imn_0_stride.d  = 1'b0;
+  assign hw2reg.imn_0_param.imn_0_stride.d  = '0;
   assign hw2reg.imn_1_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_1_addr.d  = 1'b0;
+  assign hw2reg.imn_1_addr.d  = '0;
   assign hw2reg.imn_1_param.imn_1_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_1_param.imn_1_size.d  = 1'b0;
+  assign hw2reg.imn_1_param.imn_1_size.d  = '0;
   assign hw2reg.imn_1_param.imn_1_stride.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_1_param.imn_1_stride.d  = 1'b0;
+  assign hw2reg.imn_1_param.imn_1_stride.d  = '0;
   assign hw2reg.imn_2_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_2_addr.d  = 1'b0;
+  assign hw2reg.imn_2_addr.d  = '0;
   assign hw2reg.imn_2_param.imn_2_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_2_param.imn_2_size.d  = 1'b0;
+  assign hw2reg.imn_2_param.imn_2_size.d  = '0;
   assign hw2reg.imn_2_param.imn_2_stride.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_2_param.imn_2_stride.d  = 1'b0;
+  assign hw2reg.imn_2_param.imn_2_stride.d  = '0;
   assign hw2reg.imn_3_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_3_addr.d  = 1'b0;
+  assign hw2reg.imn_3_addr.d  = '0;
   assign hw2reg.imn_3_param.imn_3_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_3_param.imn_3_size.d  = 1'b0;
+  assign hw2reg.imn_3_param.imn_3_size.d  = '0;
   assign hw2reg.imn_3_param.imn_3_stride.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.imn_3_param.imn_3_stride.d  = 1'b0;
+  assign hw2reg.imn_3_param.imn_3_stride.d  = '0;
 
   // Output Memory Nodes
   assign omn_addr_o[0] = reg2hw.omn_0_addr.q;
@@ -149,20 +149,20 @@ module mmio_interface
   assign omn_size_o[3] = reg2hw.omn_3_size.q;
 
   assign hw2reg.omn_0_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_0_addr.d  = 1'b0;
+  assign hw2reg.omn_0_addr.d  = '0;
   assign hw2reg.omn_0_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_0_size.d  = 1'b0;
+  assign hw2reg.omn_0_size.d  = '0;
   assign hw2reg.omn_1_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_1_addr.d  = 1'b0;
+  assign hw2reg.omn_1_addr.d  = '0;
   assign hw2reg.omn_1_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_1_size.d  = 1'b0;
+  assign hw2reg.omn_1_size.d  = '0;
   assign hw2reg.omn_2_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_2_addr.d  = 1'b0;
+  assign hw2reg.omn_2_addr.d  = '0;
   assign hw2reg.omn_2_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_2_size.d  = 1'b0;
+  assign hw2reg.omn_2_size.d  = '0;
   assign hw2reg.omn_3_addr.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_3_addr.d  = 1'b0;
+  assign hw2reg.omn_3_addr.d  = '0;
   assign hw2reg.omn_3_size.de = reg2hw.ctrl.clr_param.q;
-  assign hw2reg.omn_3_size.d  = 1'b0;
+  assign hw2reg.omn_3_size.d  = '0;
 
 endmodule

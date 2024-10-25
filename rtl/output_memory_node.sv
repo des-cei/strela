@@ -40,7 +40,6 @@ module output_memory_node
 
   logic [15:0] addr_offset, n_addr_offset;
 
-  logic [FIFO_PTR_WIDTH-1:0] data_count;
   logic full, empty, we, re;
 
   assign n_addr_offset = addr_offset + 16'h4;
@@ -115,7 +114,7 @@ module output_memory_node
     .rst_ni,
     .flush_i    ( clr_i                 ),
     .testmode_i ( 1'b0                  ),
-    .usage_o    ( data_count            ),
+    .usage_o    (                       ),
     .data_i     ( din_i                 ),
     .push_i     ( we                    ),
     .full_o     ( full                  ),

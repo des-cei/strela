@@ -24,7 +24,7 @@ module strela_top
   output logic                  intr_o
 );
 
-  logic start, exec, clr_mn, clr_cgra;
+  logic start, exec, clr, clr_mn, clr_cgra, intr, intr_en;
   logic [31:0] conf_addr;
   logic [31:0] input_addr [INPUT_NODES-1:0];
   logic [15:0] input_size [INPUT_NODES-1:0];
@@ -55,7 +55,9 @@ module strela_top
     .masters_resp_i,
     .masters_req_i  ( masters_req_o ),
     .start_o        ( start         ),
+    .clr_o          ( clr           ),
     .conf_change_o  ( conf_change   ),
+    .intr_en_o      ( intr_en       ),
     .conf_done_i    ( &conf_done    ),
     .exec_done_i    ( &mn_done      ),
     .state_i        ( state         ),
@@ -72,6 +74,7 @@ module strela_top
   (
     .clk_i,
     .rst_ni,
+    .clr_i          ( clr         ),
     .start_i        ( start       ),
     .conf_change_i  ( conf_change ),
     .conf_done_i    ( &conf_done  ),
@@ -80,9 +83,11 @@ module strela_top
     .clr_cgra_o     ( clr_cgra    ),
     .conf_needed_o  ( conf_needed ),
     .exec_o         ( exec        ),
-    .intr_o,
+    .intr_o         ( intr        ),
     .state_o        ( state       )
   );
+
+  assign intr_o = intr && intr_en; 
 
   // Input Memory Nodes
   generate
@@ -91,7 +96,7 @@ module strela_top
       (
         .clk_i,
         .rst_ni,
-        .clr_i          ( clr_mn                      ),
+        .clr_i          ( clr || clr_mn               ),
         .masters_resp_i ( masters_resp_i[i]           ),
         .masters_req_o  ( masters_req_o[i]            ),
         .start_i        ( start                       ),
@@ -118,7 +123,7 @@ module strela_top
       (
         .clk_i,
         .rst_ni,
-        .clr_i          ( clr_mn                          ),
+        .clr_i          ( clr || clr_mn                   ),
         .masters_resp_i ( masters_resp_i[INPUT_NODES + i] ),
         .masters_req_o  ( masters_req_o[ INPUT_NODES + i] ),
         .omn_addr_i     ( omn_addr[i]                     ),
@@ -137,14 +142,14 @@ module strela_top
   (
     .clk_i,
     .rst_ni,
-    .clr_i          ( clr_cgra  ),
-    .conf_en_i      ( conf_en   ),
-    .data_in        ( din       ),
-    .data_in_valid  ( din_v     ),
-    .data_in_ready  ( din_r     ),
-    .data_out       ( dout      ),
-    .data_out_valid ( dout_v    ),
-    .data_out_ready ( dout_r    )
+    .clr_i          ( clr || clr_cgra ),
+    .conf_en_i      ( conf_en         ),
+    .data_in        ( din             ),
+    .data_in_valid  ( din_v           ),
+    .data_in_ready  ( din_r           ),
+    .data_out       ( dout            ),
+    .data_out_valid ( dout_v          ),
+    .data_out_ready ( dout_r          )
   );
 
 endmodule

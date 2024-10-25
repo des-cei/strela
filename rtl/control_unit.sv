@@ -9,6 +9,7 @@ module control_unit
   // Clock and reset
   input  logic  clk_i,
   input  logic  rst_ni,
+  input  logic  clr_i,
 
   // Control input
   input  logic  start_i,
@@ -26,6 +27,7 @@ module control_unit
   // State
   output main_fsm_t state_o
 );
+  // synopsys sync_set_reset clr_i
 
   main_fsm_t state, n_state;
   logic conf_done_reg;
@@ -34,10 +36,14 @@ module control_unit
     if (!rst_ni) begin
       conf_done_reg <= 1'b0;
     end else begin
-      if (conf_change_i) begin
+      if (clr_i) begin
         conf_done_reg <= 1'b0;
-      end else if (conf_done_i) begin
-        conf_done_reg <= 1'b1;
+      end else begin
+        if (conf_change_i) begin
+          conf_done_reg <= 1'b0;
+        end else if (conf_done_i) begin
+          conf_done_reg <= 1'b1;
+        end
       end
     end
   end
@@ -46,8 +52,12 @@ module control_unit
     if (!rst_ni) begin
       state <= S_MAIN_IDLE;
     end else begin
-      if (start_i || state != S_MAIN_IDLE) begin
-        state <= n_state;
+      if (clr_i) begin
+        state <= S_MAIN_IDLE;
+      end else begin
+        if (start_i || state != S_MAIN_IDLE) begin
+          state <= n_state;
+        end
       end
     end
   end

@@ -17,11 +17,23 @@
       swaccess: "wo",
       hwaccess: "hrw",
       fields: [
-        { bits: "0", name: "START",        desc: "CGRA start" }
-        { bits: "1", name: "CLR_PARAM",    desc: "CGRA clear parameters (IP)" }
-        { bits: "2", name: "CLR_CONF",     desc: "CGRA clear configuration (CGRA core)" }
-        { bits: "3", name: "PERF_CTR_EN",  desc: "Enable performance counters" }
-        { bits: "4", name: "PERF_CTR_RST", desc: "Reset performance counters" }
+        { bits: "0", name: "START",        desc: "Start" }
+        { bits: "1", name: "CLR",          desc: "Clear all IP" }
+        { bits: "2", name: "CLR_PARAM",    desc: "Clear parameters (MMIO registers)" }
+        { bits: "3", name: "CLR_CONF",     desc: "Clear configuration (CGRA core)" }
+        { bits: "4", name: "CLR_PERF_CTR", desc: "Clear performance counters" }
+      ]
+    }
+
+    {
+      name:     "MODE",
+      desc:     "STRELA mode register",
+      resval:   0,
+      swaccess: "wo",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "0", name: "INTR_EN",      desc: "Enable interrupts" }
+        { bits: "1", name: "PERF_CTR_EN",  desc: "Enable performance counters" }
       ]
     }
 
@@ -31,8 +43,8 @@
       swaccess: "ro",
       hwaccess: "hwo",
       fields: [
-        { bits: "0", name: "EXEC_DONE", desc: "CGRA execution done" }
-        { bits: "1", name: "CONF_DONE", desc: "CGRA configuration done" }
+        { bits: "0", name: "EXEC_DONE", desc: "Execution done" }
+        { bits: "1", name: "CONF_DONE", desc: "Configuration done" }
       ]
     }
 

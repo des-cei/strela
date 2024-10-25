@@ -70,14 +70,18 @@ module strela_reg_top #(
   //        or <reg>_{wd|we|qs} if field == 1 or 0
   logic ctrl_start_wd;
   logic ctrl_start_we;
+  logic ctrl_clr_wd;
+  logic ctrl_clr_we;
   logic ctrl_clr_param_wd;
   logic ctrl_clr_param_we;
   logic ctrl_clr_conf_wd;
   logic ctrl_clr_conf_we;
-  logic ctrl_perf_ctr_en_wd;
-  logic ctrl_perf_ctr_en_we;
-  logic ctrl_perf_ctr_rst_wd;
-  logic ctrl_perf_ctr_rst_we;
+  logic ctrl_clr_perf_ctr_wd;
+  logic ctrl_clr_perf_ctr_we;
+  logic mode_intr_en_wd;
+  logic mode_intr_en_we;
+  logic mode_perf_ctr_en_wd;
+  logic mode_perf_ctr_en_we;
   logic status_exec_done_qs;
   logic status_conf_done_qs;
   logic [31:0] perf_ctr_total_cycles_qs;
@@ -176,7 +180,32 @@ module strela_reg_top #(
   );
 
 
-  //   F[clr_param]: 1:1
+  //   F[clr]: 1:1
+  prim_subreg #(
+    .DW      (1),
+    .SWACCESS("WO"),
+    .RESVAL  (1'h0)
+  ) u_ctrl_clr (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (ctrl_clr_we),
+    .wd     (ctrl_clr_wd),
+
+    // from internal hardware
+    .de     (hw2reg.ctrl.clr.de),
+    .d      (hw2reg.ctrl.clr.d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.ctrl.clr.q ),
+
+    .qs     ()
+  );
+
+
+  //   F[clr_param]: 2:2
   prim_subreg #(
     .DW      (1),
     .SWACCESS("WO"),
@@ -201,7 +230,7 @@ module strela_reg_top #(
   );
 
 
-  //   F[clr_conf]: 2:2
+  //   F[clr_conf]: 3:3
   prim_subreg #(
     .DW      (1),
     .SWACCESS("WO"),
@@ -226,51 +255,78 @@ module strela_reg_top #(
   );
 
 
-  //   F[perf_ctr_en]: 3:3
+  //   F[clr_perf_ctr]: 4:4
   prim_subreg #(
     .DW      (1),
     .SWACCESS("WO"),
     .RESVAL  (1'h0)
-  ) u_ctrl_perf_ctr_en (
+  ) u_ctrl_clr_perf_ctr (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (ctrl_perf_ctr_en_we),
-    .wd     (ctrl_perf_ctr_en_wd),
+    .we     (ctrl_clr_perf_ctr_we),
+    .wd     (ctrl_clr_perf_ctr_wd),
 
     // from internal hardware
-    .de     (hw2reg.ctrl.perf_ctr_en.de),
-    .d      (hw2reg.ctrl.perf_ctr_en.d ),
+    .de     (hw2reg.ctrl.clr_perf_ctr.de),
+    .d      (hw2reg.ctrl.clr_perf_ctr.d ),
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.ctrl.perf_ctr_en.q ),
+    .q      (reg2hw.ctrl.clr_perf_ctr.q ),
 
     .qs     ()
   );
 
 
-  //   F[perf_ctr_rst]: 4:4
+  // R[mode]: V(False)
+
+  //   F[intr_en]: 0:0
   prim_subreg #(
     .DW      (1),
     .SWACCESS("WO"),
     .RESVAL  (1'h0)
-  ) u_ctrl_perf_ctr_rst (
+  ) u_mode_intr_en (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we     (ctrl_perf_ctr_rst_we),
-    .wd     (ctrl_perf_ctr_rst_wd),
+    .we     (mode_intr_en_we),
+    .wd     (mode_intr_en_wd),
 
     // from internal hardware
-    .de     (hw2reg.ctrl.perf_ctr_rst.de),
-    .d      (hw2reg.ctrl.perf_ctr_rst.d ),
+    .de     (hw2reg.mode.intr_en.de),
+    .d      (hw2reg.mode.intr_en.d ),
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.ctrl.perf_ctr_rst.q ),
+    .q      (reg2hw.mode.intr_en.q ),
+
+    .qs     ()
+  );
+
+
+  //   F[perf_ctr_en]: 1:1
+  prim_subreg #(
+    .DW      (1),
+    .SWACCESS("WO"),
+    .RESVAL  (1'h0)
+  ) u_mode_perf_ctr_en (
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
+
+    // from register interface
+    .we     (mode_perf_ctr_en_we),
+    .wd     (mode_perf_ctr_en_wd),
+
+    // from internal hardware
+    .de     (hw2reg.mode.perf_ctr_en.de),
+    .d      (hw2reg.mode.perf_ctr_en.d ),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.mode.perf_ctr_en.q ),
 
     .qs     ()
   );
@@ -1001,32 +1057,33 @@ module strela_reg_top #(
 
 
 
-  logic [22:0] addr_hit;
+  logic [23:0] addr_hit;
   always_comb begin
     addr_hit = '0;
     addr_hit[ 0] = (reg_addr == STRELA_CTRL_OFFSET);
-    addr_hit[ 1] = (reg_addr == STRELA_STATUS_OFFSET);
-    addr_hit[ 2] = (reg_addr == STRELA_PERF_CTR_TOTAL_CYCLES_OFFSET);
-    addr_hit[ 3] = (reg_addr == STRELA_PERF_CTR_EXEC_CYCLES_OFFSET);
-    addr_hit[ 4] = (reg_addr == STRELA_PERF_CTR_CONF_CYCLES_OFFSET);
-    addr_hit[ 5] = (reg_addr == STRELA_PERF_CTR_STALL_CYCLES_OFFSET);
-    addr_hit[ 6] = (reg_addr == STRELA_CONF_ADDR_OFFSET);
-    addr_hit[ 7] = (reg_addr == STRELA_IMN_0_ADDR_OFFSET);
-    addr_hit[ 8] = (reg_addr == STRELA_IMN_0_PARAM_OFFSET);
-    addr_hit[ 9] = (reg_addr == STRELA_IMN_1_ADDR_OFFSET);
-    addr_hit[10] = (reg_addr == STRELA_IMN_1_PARAM_OFFSET);
-    addr_hit[11] = (reg_addr == STRELA_IMN_2_ADDR_OFFSET);
-    addr_hit[12] = (reg_addr == STRELA_IMN_2_PARAM_OFFSET);
-    addr_hit[13] = (reg_addr == STRELA_IMN_3_ADDR_OFFSET);
-    addr_hit[14] = (reg_addr == STRELA_IMN_3_PARAM_OFFSET);
-    addr_hit[15] = (reg_addr == STRELA_OMN_0_ADDR_OFFSET);
-    addr_hit[16] = (reg_addr == STRELA_OMN_0_SIZE_OFFSET);
-    addr_hit[17] = (reg_addr == STRELA_OMN_1_ADDR_OFFSET);
-    addr_hit[18] = (reg_addr == STRELA_OMN_1_SIZE_OFFSET);
-    addr_hit[19] = (reg_addr == STRELA_OMN_2_ADDR_OFFSET);
-    addr_hit[20] = (reg_addr == STRELA_OMN_2_SIZE_OFFSET);
-    addr_hit[21] = (reg_addr == STRELA_OMN_3_ADDR_OFFSET);
-    addr_hit[22] = (reg_addr == STRELA_OMN_3_SIZE_OFFSET);
+    addr_hit[ 1] = (reg_addr == STRELA_MODE_OFFSET);
+    addr_hit[ 2] = (reg_addr == STRELA_STATUS_OFFSET);
+    addr_hit[ 3] = (reg_addr == STRELA_PERF_CTR_TOTAL_CYCLES_OFFSET);
+    addr_hit[ 4] = (reg_addr == STRELA_PERF_CTR_EXEC_CYCLES_OFFSET);
+    addr_hit[ 5] = (reg_addr == STRELA_PERF_CTR_CONF_CYCLES_OFFSET);
+    addr_hit[ 6] = (reg_addr == STRELA_PERF_CTR_STALL_CYCLES_OFFSET);
+    addr_hit[ 7] = (reg_addr == STRELA_CONF_ADDR_OFFSET);
+    addr_hit[ 8] = (reg_addr == STRELA_IMN_0_ADDR_OFFSET);
+    addr_hit[ 9] = (reg_addr == STRELA_IMN_0_PARAM_OFFSET);
+    addr_hit[10] = (reg_addr == STRELA_IMN_1_ADDR_OFFSET);
+    addr_hit[11] = (reg_addr == STRELA_IMN_1_PARAM_OFFSET);
+    addr_hit[12] = (reg_addr == STRELA_IMN_2_ADDR_OFFSET);
+    addr_hit[13] = (reg_addr == STRELA_IMN_2_PARAM_OFFSET);
+    addr_hit[14] = (reg_addr == STRELA_IMN_3_ADDR_OFFSET);
+    addr_hit[15] = (reg_addr == STRELA_IMN_3_PARAM_OFFSET);
+    addr_hit[16] = (reg_addr == STRELA_OMN_0_ADDR_OFFSET);
+    addr_hit[17] = (reg_addr == STRELA_OMN_0_SIZE_OFFSET);
+    addr_hit[18] = (reg_addr == STRELA_OMN_1_ADDR_OFFSET);
+    addr_hit[19] = (reg_addr == STRELA_OMN_1_SIZE_OFFSET);
+    addr_hit[20] = (reg_addr == STRELA_OMN_2_ADDR_OFFSET);
+    addr_hit[21] = (reg_addr == STRELA_OMN_2_SIZE_OFFSET);
+    addr_hit[22] = (reg_addr == STRELA_OMN_3_ADDR_OFFSET);
+    addr_hit[23] = (reg_addr == STRELA_OMN_3_SIZE_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -1056,85 +1113,92 @@ module strela_reg_top #(
                (addr_hit[19] & (|(STRELA_PERMIT[19] & ~reg_be))) |
                (addr_hit[20] & (|(STRELA_PERMIT[20] & ~reg_be))) |
                (addr_hit[21] & (|(STRELA_PERMIT[21] & ~reg_be))) |
-               (addr_hit[22] & (|(STRELA_PERMIT[22] & ~reg_be)))));
+               (addr_hit[22] & (|(STRELA_PERMIT[22] & ~reg_be))) |
+               (addr_hit[23] & (|(STRELA_PERMIT[23] & ~reg_be)))));
   end
 
   assign ctrl_start_we = addr_hit[0] & reg_we & !reg_error;
   assign ctrl_start_wd = reg_wdata[0];
 
+  assign ctrl_clr_we = addr_hit[0] & reg_we & !reg_error;
+  assign ctrl_clr_wd = reg_wdata[1];
+
   assign ctrl_clr_param_we = addr_hit[0] & reg_we & !reg_error;
-  assign ctrl_clr_param_wd = reg_wdata[1];
+  assign ctrl_clr_param_wd = reg_wdata[2];
 
   assign ctrl_clr_conf_we = addr_hit[0] & reg_we & !reg_error;
-  assign ctrl_clr_conf_wd = reg_wdata[2];
+  assign ctrl_clr_conf_wd = reg_wdata[3];
 
-  assign ctrl_perf_ctr_en_we = addr_hit[0] & reg_we & !reg_error;
-  assign ctrl_perf_ctr_en_wd = reg_wdata[3];
+  assign ctrl_clr_perf_ctr_we = addr_hit[0] & reg_we & !reg_error;
+  assign ctrl_clr_perf_ctr_wd = reg_wdata[4];
 
-  assign ctrl_perf_ctr_rst_we = addr_hit[0] & reg_we & !reg_error;
-  assign ctrl_perf_ctr_rst_wd = reg_wdata[4];
+  assign mode_intr_en_we = addr_hit[1] & reg_we & !reg_error;
+  assign mode_intr_en_wd = reg_wdata[0];
 
-  assign conf_addr_we = addr_hit[6] & reg_we & !reg_error;
+  assign mode_perf_ctr_en_we = addr_hit[1] & reg_we & !reg_error;
+  assign mode_perf_ctr_en_wd = reg_wdata[1];
+
+  assign conf_addr_we = addr_hit[7] & reg_we & !reg_error;
   assign conf_addr_wd = reg_wdata[31:0];
 
-  assign imn_0_addr_we = addr_hit[7] & reg_we & !reg_error;
+  assign imn_0_addr_we = addr_hit[8] & reg_we & !reg_error;
   assign imn_0_addr_wd = reg_wdata[31:0];
 
-  assign imn_0_param_imn_0_size_we = addr_hit[8] & reg_we & !reg_error;
+  assign imn_0_param_imn_0_size_we = addr_hit[9] & reg_we & !reg_error;
   assign imn_0_param_imn_0_size_wd = reg_wdata[15:0];
 
-  assign imn_0_param_imn_0_stride_we = addr_hit[8] & reg_we & !reg_error;
+  assign imn_0_param_imn_0_stride_we = addr_hit[9] & reg_we & !reg_error;
   assign imn_0_param_imn_0_stride_wd = reg_wdata[31:16];
 
-  assign imn_1_addr_we = addr_hit[9] & reg_we & !reg_error;
+  assign imn_1_addr_we = addr_hit[10] & reg_we & !reg_error;
   assign imn_1_addr_wd = reg_wdata[31:0];
 
-  assign imn_1_param_imn_1_size_we = addr_hit[10] & reg_we & !reg_error;
+  assign imn_1_param_imn_1_size_we = addr_hit[11] & reg_we & !reg_error;
   assign imn_1_param_imn_1_size_wd = reg_wdata[15:0];
 
-  assign imn_1_param_imn_1_stride_we = addr_hit[10] & reg_we & !reg_error;
+  assign imn_1_param_imn_1_stride_we = addr_hit[11] & reg_we & !reg_error;
   assign imn_1_param_imn_1_stride_wd = reg_wdata[31:16];
 
-  assign imn_2_addr_we = addr_hit[11] & reg_we & !reg_error;
+  assign imn_2_addr_we = addr_hit[12] & reg_we & !reg_error;
   assign imn_2_addr_wd = reg_wdata[31:0];
 
-  assign imn_2_param_imn_2_size_we = addr_hit[12] & reg_we & !reg_error;
+  assign imn_2_param_imn_2_size_we = addr_hit[13] & reg_we & !reg_error;
   assign imn_2_param_imn_2_size_wd = reg_wdata[15:0];
 
-  assign imn_2_param_imn_2_stride_we = addr_hit[12] & reg_we & !reg_error;
+  assign imn_2_param_imn_2_stride_we = addr_hit[13] & reg_we & !reg_error;
   assign imn_2_param_imn_2_stride_wd = reg_wdata[31:16];
 
-  assign imn_3_addr_we = addr_hit[13] & reg_we & !reg_error;
+  assign imn_3_addr_we = addr_hit[14] & reg_we & !reg_error;
   assign imn_3_addr_wd = reg_wdata[31:0];
 
-  assign imn_3_param_imn_3_size_we = addr_hit[14] & reg_we & !reg_error;
+  assign imn_3_param_imn_3_size_we = addr_hit[15] & reg_we & !reg_error;
   assign imn_3_param_imn_3_size_wd = reg_wdata[15:0];
 
-  assign imn_3_param_imn_3_stride_we = addr_hit[14] & reg_we & !reg_error;
+  assign imn_3_param_imn_3_stride_we = addr_hit[15] & reg_we & !reg_error;
   assign imn_3_param_imn_3_stride_wd = reg_wdata[31:16];
 
-  assign omn_0_addr_we = addr_hit[15] & reg_we & !reg_error;
+  assign omn_0_addr_we = addr_hit[16] & reg_we & !reg_error;
   assign omn_0_addr_wd = reg_wdata[31:0];
 
-  assign omn_0_size_we = addr_hit[16] & reg_we & !reg_error;
+  assign omn_0_size_we = addr_hit[17] & reg_we & !reg_error;
   assign omn_0_size_wd = reg_wdata[15:0];
 
-  assign omn_1_addr_we = addr_hit[17] & reg_we & !reg_error;
+  assign omn_1_addr_we = addr_hit[18] & reg_we & !reg_error;
   assign omn_1_addr_wd = reg_wdata[31:0];
 
-  assign omn_1_size_we = addr_hit[18] & reg_we & !reg_error;
+  assign omn_1_size_we = addr_hit[19] & reg_we & !reg_error;
   assign omn_1_size_wd = reg_wdata[15:0];
 
-  assign omn_2_addr_we = addr_hit[19] & reg_we & !reg_error;
+  assign omn_2_addr_we = addr_hit[20] & reg_we & !reg_error;
   assign omn_2_addr_wd = reg_wdata[31:0];
 
-  assign omn_2_size_we = addr_hit[20] & reg_we & !reg_error;
+  assign omn_2_size_we = addr_hit[21] & reg_we & !reg_error;
   assign omn_2_size_wd = reg_wdata[15:0];
 
-  assign omn_3_addr_we = addr_hit[21] & reg_we & !reg_error;
+  assign omn_3_addr_we = addr_hit[22] & reg_we & !reg_error;
   assign omn_3_addr_wd = reg_wdata[31:0];
 
-  assign omn_3_size_we = addr_hit[22] & reg_we & !reg_error;
+  assign omn_3_size_we = addr_hit[23] & reg_we & !reg_error;
   assign omn_3_size_wd = reg_wdata[15:0];
 
   // Read data return
@@ -1150,95 +1214,100 @@ module strela_reg_top #(
       end
 
       addr_hit[1]: begin
+        reg_rdata_next[0] = '0;
+        reg_rdata_next[1] = '0;
+      end
+
+      addr_hit[2]: begin
         reg_rdata_next[0] = status_exec_done_qs;
         reg_rdata_next[1] = status_conf_done_qs;
       end
 
-      addr_hit[2]: begin
+      addr_hit[3]: begin
         reg_rdata_next[31:0] = perf_ctr_total_cycles_qs;
       end
 
-      addr_hit[3]: begin
+      addr_hit[4]: begin
         reg_rdata_next[31:0] = perf_ctr_exec_cycles_qs;
       end
 
-      addr_hit[4]: begin
+      addr_hit[5]: begin
         reg_rdata_next[31:0] = perf_ctr_conf_cycles_qs;
       end
 
-      addr_hit[5]: begin
+      addr_hit[6]: begin
         reg_rdata_next[31:0] = perf_ctr_stall_cycles_qs;
       end
 
-      addr_hit[6]: begin
+      addr_hit[7]: begin
         reg_rdata_next[31:0] = conf_addr_qs;
       end
 
-      addr_hit[7]: begin
+      addr_hit[8]: begin
         reg_rdata_next[31:0] = imn_0_addr_qs;
       end
 
-      addr_hit[8]: begin
+      addr_hit[9]: begin
         reg_rdata_next[15:0] = imn_0_param_imn_0_size_qs;
         reg_rdata_next[31:16] = imn_0_param_imn_0_stride_qs;
       end
 
-      addr_hit[9]: begin
+      addr_hit[10]: begin
         reg_rdata_next[31:0] = imn_1_addr_qs;
       end
 
-      addr_hit[10]: begin
+      addr_hit[11]: begin
         reg_rdata_next[15:0] = imn_1_param_imn_1_size_qs;
         reg_rdata_next[31:16] = imn_1_param_imn_1_stride_qs;
       end
 
-      addr_hit[11]: begin
+      addr_hit[12]: begin
         reg_rdata_next[31:0] = imn_2_addr_qs;
       end
 
-      addr_hit[12]: begin
+      addr_hit[13]: begin
         reg_rdata_next[15:0] = imn_2_param_imn_2_size_qs;
         reg_rdata_next[31:16] = imn_2_param_imn_2_stride_qs;
       end
 
-      addr_hit[13]: begin
+      addr_hit[14]: begin
         reg_rdata_next[31:0] = imn_3_addr_qs;
       end
 
-      addr_hit[14]: begin
+      addr_hit[15]: begin
         reg_rdata_next[15:0] = imn_3_param_imn_3_size_qs;
         reg_rdata_next[31:16] = imn_3_param_imn_3_stride_qs;
       end
 
-      addr_hit[15]: begin
+      addr_hit[16]: begin
         reg_rdata_next[31:0] = omn_0_addr_qs;
       end
 
-      addr_hit[16]: begin
+      addr_hit[17]: begin
         reg_rdata_next[15:0] = omn_0_size_qs;
       end
 
-      addr_hit[17]: begin
+      addr_hit[18]: begin
         reg_rdata_next[31:0] = omn_1_addr_qs;
       end
 
-      addr_hit[18]: begin
+      addr_hit[19]: begin
         reg_rdata_next[15:0] = omn_1_size_qs;
       end
 
-      addr_hit[19]: begin
+      addr_hit[20]: begin
         reg_rdata_next[31:0] = omn_2_addr_qs;
       end
 
-      addr_hit[20]: begin
+      addr_hit[21]: begin
         reg_rdata_next[15:0] = omn_2_size_qs;
       end
 
-      addr_hit[21]: begin
+      addr_hit[22]: begin
         reg_rdata_next[31:0] = omn_3_addr_qs;
       end
 
-      addr_hit[22]: begin
+      addr_hit[23]: begin
         reg_rdata_next[15:0] = omn_3_size_qs;
       end
 

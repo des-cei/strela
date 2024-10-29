@@ -1,10 +1,6 @@
 # Copyright 2024 CEI-UPM
 # Daniel Vazquez (daniel.vazquez@upm.es)
 
-
-# PE number
-position: 0
-
 # Processing element configuration
 # PE FF clock gates
 ff_cgen_n: 0

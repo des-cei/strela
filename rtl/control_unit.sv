@@ -3,29 +3,29 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-module control_unit 
+module control_unit
   import strela_pkg::*;
 (
-  // Clock and reset
-  input  logic  clk_i,
-  input  logic  rst_ni,
-  input  logic  clr_i,
+    // Clock and reset
+    input logic clk_i,
+    input logic rst_ni,
+    input logic clr_i,
 
-  // Control input
-  input  logic  start_i,
-  input  logic  conf_change_i,
-  input  logic  conf_done_i,
-  input  logic  mn_done_i,
+    // Control input
+    input logic start_i,
+    input logic conf_change_i,
+    input logic conf_done_i,
+    input logic mn_done_i,
 
-  // Control output
-  output logic  clr_mn_o,
-  output logic  clr_cgra_o,
-  output logic  conf_needed_o,
-  output logic  exec_o,
-  output logic  intr_o,
+    // Control output
+    output logic clr_mn_o,
+    output logic clr_cgra_o,
+    output logic conf_needed_o,
+    output logic exec_o,
+    output logic intr_o,
 
-  // State
-  output main_fsm_t state_o
+    // State
+    output main_fsm_t state_o
 );
   // synopsys sync_set_reset clr_i
 
@@ -62,13 +62,11 @@ module control_unit
     end
   end
 
-  always_comb
-  begin
-    n_state    = S_MAIN_IDLE;
+  always_comb begin
+    n_state = S_MAIN_IDLE;
 
     unique case (state)
-      S_MAIN_IDLE:
-      begin
+      S_MAIN_IDLE: begin
         if (start_i) begin
           if (conf_done_reg) begin
             n_state = S_MAIN_EXEC;
@@ -79,24 +77,21 @@ module control_unit
           n_state = S_MAIN_IDLE;
         end
       end
-      S_MAIN_WAIT: 
-      begin
-        if (conf_done_i) begin // conf_done_reg??
+      S_MAIN_WAIT: begin
+        if (conf_done_i) begin  // conf_done_reg??
           n_state = S_MAIN_EXEC;
         end else begin
           n_state = S_MAIN_WAIT;
         end
       end
-      S_MAIN_EXEC:
-      begin
+      S_MAIN_EXEC: begin
         if (mn_done_i) begin
           n_state = S_MAIN_DONE;
         end else begin
           n_state = S_MAIN_EXEC;
         end
       end
-      S_MAIN_DONE:
-      begin
+      S_MAIN_DONE: begin
         n_state = S_MAIN_IDLE;
       end
       default: n_state = S_MAIN_IDLE;

@@ -6,9 +6,9 @@
 package strela_pkg;
 
   // General configuration
-  localparam INPUT_NODES  = 4;
+  localparam INPUT_NODES = 4;
   localparam OUTPUT_NODES = 4;
-  localparam NODES        = INPUT_NODES + OUTPUT_NODES;
+  localparam NODES = INPUT_NODES + OUTPUT_NODES;
 
   // Configuration parameters
   localparam logic [15:0] CONF_STRIDE = 16'd4;

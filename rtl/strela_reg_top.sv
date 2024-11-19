@@ -8,44 +8,44 @@
 `include "common_cells/assertions.svh"
 
 module strela_reg_top #(
-  parameter type reg_req_t = logic,
-  parameter type reg_rsp_t = logic,
-  parameter int AW = 7
+    parameter type reg_req_t = logic,
+    parameter type reg_rsp_t = logic,
+    parameter int AW = 7
 ) (
-  input logic clk_i,
-  input logic rst_ni,
-  input  reg_req_t reg_req_i,
-  output reg_rsp_t reg_rsp_o,
-  // To HW
-  output strela_reg_pkg::strela_reg2hw_t reg2hw, // Write
-  input  strela_reg_pkg::strela_hw2reg_t hw2reg, // Read
+    input logic clk_i,
+    input logic rst_ni,
+    input reg_req_t reg_req_i,
+    output reg_rsp_t reg_rsp_o,
+    // To HW
+    output strela_reg_pkg::strela_reg2hw_t reg2hw,  // Write
+    input strela_reg_pkg::strela_hw2reg_t hw2reg,  // Read
 
 
-  // Config
-  input devmode_i // If 1, explicit error return for unmapped register access
+    // Config
+    input devmode_i  // If 1, explicit error return for unmapped register access
 );
 
-  import strela_reg_pkg::* ;
+  import strela_reg_pkg::*;
 
   localparam int DW = 32;
-  localparam int DBW = DW/8;                    // Byte Width
+  localparam int DBW = DW / 8;  // Byte Width
 
   // register signals
   logic           reg_we;
   logic           reg_re;
-  logic [AW-1:0]  reg_addr;
-  logic [DW-1:0]  reg_wdata;
+  logic [ AW-1:0] reg_addr;
+  logic [ DW-1:0] reg_wdata;
   logic [DBW-1:0] reg_be;
-  logic [DW-1:0]  reg_rdata;
+  logic [ DW-1:0] reg_rdata;
   logic           reg_error;
 
-  logic          addrmiss, wr_err;
+  logic addrmiss, wr_err;
 
   logic [DW-1:0] reg_rdata_next;
 
   // Below register interface can be changed
-  reg_req_t  reg_intf_req;
-  reg_rsp_t  reg_intf_rsp;
+  reg_req_t reg_intf_req;
+  reg_rsp_t reg_intf_rsp;
 
 
   assign reg_intf_req = reg_req_i;
@@ -61,7 +61,7 @@ module strela_reg_top #(
   assign reg_intf_rsp.error = reg_error;
   assign reg_intf_rsp.ready = 1'b1;
 
-  assign reg_rdata = reg_rdata_next ;
+  assign reg_rdata = reg_rdata_next;
   assign reg_error = (devmode_i & addrmiss) | wr_err;
 
 
@@ -157,126 +157,126 @@ module strela_reg_top #(
 
   //   F[start]: 0:0
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_ctrl_start (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (ctrl_start_we),
-    .wd     (ctrl_start_wd),
+      // from register interface
+      .we(ctrl_start_we),
+      .wd(ctrl_start_wd),
 
-    // from internal hardware
-    .de     (hw2reg.ctrl.start.de),
-    .d      (hw2reg.ctrl.start.d ),
+      // from internal hardware
+      .de(hw2reg.ctrl.start.de),
+      .d (hw2reg.ctrl.start.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.ctrl.start.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.ctrl.start.q),
 
-    .qs     ()
+      .qs()
   );
 
 
   //   F[clr]: 1:1
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_ctrl_clr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (ctrl_clr_we),
-    .wd     (ctrl_clr_wd),
+      // from register interface
+      .we(ctrl_clr_we),
+      .wd(ctrl_clr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.ctrl.clr.de),
-    .d      (hw2reg.ctrl.clr.d ),
+      // from internal hardware
+      .de(hw2reg.ctrl.clr.de),
+      .d (hw2reg.ctrl.clr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.ctrl.clr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.ctrl.clr.q),
 
-    .qs     ()
+      .qs()
   );
 
 
   //   F[clr_param]: 2:2
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_ctrl_clr_param (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (ctrl_clr_param_we),
-    .wd     (ctrl_clr_param_wd),
+      // from register interface
+      .we(ctrl_clr_param_we),
+      .wd(ctrl_clr_param_wd),
 
-    // from internal hardware
-    .de     (hw2reg.ctrl.clr_param.de),
-    .d      (hw2reg.ctrl.clr_param.d ),
+      // from internal hardware
+      .de(hw2reg.ctrl.clr_param.de),
+      .d (hw2reg.ctrl.clr_param.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.ctrl.clr_param.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.ctrl.clr_param.q),
 
-    .qs     ()
+      .qs()
   );
 
 
   //   F[clr_conf]: 3:3
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_ctrl_clr_conf (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (ctrl_clr_conf_we),
-    .wd     (ctrl_clr_conf_wd),
+      // from register interface
+      .we(ctrl_clr_conf_we),
+      .wd(ctrl_clr_conf_wd),
 
-    // from internal hardware
-    .de     (hw2reg.ctrl.clr_conf.de),
-    .d      (hw2reg.ctrl.clr_conf.d ),
+      // from internal hardware
+      .de(hw2reg.ctrl.clr_conf.de),
+      .d (hw2reg.ctrl.clr_conf.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.ctrl.clr_conf.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.ctrl.clr_conf.q),
 
-    .qs     ()
+      .qs()
   );
 
 
   //   F[clr_perf_ctr]: 4:4
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_ctrl_clr_perf_ctr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (ctrl_clr_perf_ctr_we),
-    .wd     (ctrl_clr_perf_ctr_wd),
+      // from register interface
+      .we(ctrl_clr_perf_ctr_we),
+      .wd(ctrl_clr_perf_ctr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.ctrl.clr_perf_ctr.de),
-    .d      (hw2reg.ctrl.clr_perf_ctr.d ),
+      // from internal hardware
+      .de(hw2reg.ctrl.clr_perf_ctr.de),
+      .d (hw2reg.ctrl.clr_perf_ctr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.ctrl.clr_perf_ctr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.ctrl.clr_perf_ctr.q),
 
-    .qs     ()
+      .qs()
   );
 
 
@@ -284,51 +284,51 @@ module strela_reg_top #(
 
   //   F[intr_en]: 0:0
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_mode_intr_en (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (mode_intr_en_we),
-    .wd     (mode_intr_en_wd),
+      // from register interface
+      .we(mode_intr_en_we),
+      .wd(mode_intr_en_wd),
 
-    // from internal hardware
-    .de     (hw2reg.mode.intr_en.de),
-    .d      (hw2reg.mode.intr_en.d ),
+      // from internal hardware
+      .de(hw2reg.mode.intr_en.de),
+      .d (hw2reg.mode.intr_en.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.mode.intr_en.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.mode.intr_en.q),
 
-    .qs     ()
+      .qs()
   );
 
 
   //   F[perf_ctr_en]: 1:1
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("WO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("WO"),
+      .RESVAL  (1'h0)
   ) u_mode_perf_ctr_en (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (mode_perf_ctr_en_we),
-    .wd     (mode_perf_ctr_en_wd),
+      // from register interface
+      .we(mode_perf_ctr_en_we),
+      .wd(mode_perf_ctr_en_wd),
 
-    // from internal hardware
-    .de     (hw2reg.mode.perf_ctr_en.de),
-    .d      (hw2reg.mode.perf_ctr_en.d ),
+      // from internal hardware
+      .de(hw2reg.mode.perf_ctr_en.de),
+      .d (hw2reg.mode.perf_ctr_en.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.mode.perf_ctr_en.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.mode.perf_ctr_en.q),
 
-    .qs     ()
+      .qs()
   );
 
 
@@ -336,209 +336,209 @@ module strela_reg_top #(
 
   //   F[exec_done]: 0:0
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RO"),
+      .RESVAL  (1'h0)
   ) u_status_exec_done (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.status.exec_done.de),
-    .d      (hw2reg.status.exec_done.d ),
+      // from internal hardware
+      .de(hw2reg.status.exec_done.de),
+      .d (hw2reg.status.exec_done.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (status_exec_done_qs)
+      // to register interface (read)
+      .qs(status_exec_done_qs)
   );
 
 
   //   F[conf_done]: 1:1
   prim_subreg #(
-    .DW      (1),
-    .SWACCESS("RO"),
-    .RESVAL  (1'h0)
+      .DW      (1),
+      .SWACCESS("RO"),
+      .RESVAL  (1'h0)
   ) u_status_conf_done (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.status.conf_done.de),
-    .d      (hw2reg.status.conf_done.d ),
+      // from internal hardware
+      .de(hw2reg.status.conf_done.de),
+      .d (hw2reg.status.conf_done.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (),
+      // to internal hardware
+      .qe(),
+      .q (),
 
-    // to register interface (read)
-    .qs     (status_conf_done_qs)
+      // to register interface (read)
+      .qs(status_conf_done_qs)
   );
 
 
   // R[perf_ctr_total_cycles]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RO"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RO"),
+      .RESVAL  (32'h0)
   ) u_perf_ctr_total_cycles (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.perf_ctr_total_cycles.de),
-    .d      (hw2reg.perf_ctr_total_cycles.d ),
+      // from internal hardware
+      .de(hw2reg.perf_ctr_total_cycles.de),
+      .d (hw2reg.perf_ctr_total_cycles.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.perf_ctr_total_cycles.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.perf_ctr_total_cycles.q),
 
-    // to register interface (read)
-    .qs     (perf_ctr_total_cycles_qs)
+      // to register interface (read)
+      .qs(perf_ctr_total_cycles_qs)
   );
 
 
   // R[perf_ctr_exec_cycles]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RO"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RO"),
+      .RESVAL  (32'h0)
   ) u_perf_ctr_exec_cycles (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.perf_ctr_exec_cycles.de),
-    .d      (hw2reg.perf_ctr_exec_cycles.d ),
+      // from internal hardware
+      .de(hw2reg.perf_ctr_exec_cycles.de),
+      .d (hw2reg.perf_ctr_exec_cycles.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.perf_ctr_exec_cycles.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.perf_ctr_exec_cycles.q),
 
-    // to register interface (read)
-    .qs     (perf_ctr_exec_cycles_qs)
+      // to register interface (read)
+      .qs(perf_ctr_exec_cycles_qs)
   );
 
 
   // R[perf_ctr_conf_cycles]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RO"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RO"),
+      .RESVAL  (32'h0)
   ) u_perf_ctr_conf_cycles (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.perf_ctr_conf_cycles.de),
-    .d      (hw2reg.perf_ctr_conf_cycles.d ),
+      // from internal hardware
+      .de(hw2reg.perf_ctr_conf_cycles.de),
+      .d (hw2reg.perf_ctr_conf_cycles.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.perf_ctr_conf_cycles.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.perf_ctr_conf_cycles.q),
 
-    // to register interface (read)
-    .qs     (perf_ctr_conf_cycles_qs)
+      // to register interface (read)
+      .qs(perf_ctr_conf_cycles_qs)
   );
 
 
   // R[perf_ctr_stall_cycles]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RO"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RO"),
+      .RESVAL  (32'h0)
   ) u_perf_ctr_stall_cycles (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    .we     (1'b0),
-    .wd     ('0  ),
+      .we(1'b0),
+      .wd('0),
 
-    // from internal hardware
-    .de     (hw2reg.perf_ctr_stall_cycles.de),
-    .d      (hw2reg.perf_ctr_stall_cycles.d ),
+      // from internal hardware
+      .de(hw2reg.perf_ctr_stall_cycles.de),
+      .d (hw2reg.perf_ctr_stall_cycles.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.perf_ctr_stall_cycles.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.perf_ctr_stall_cycles.q),
 
-    // to register interface (read)
-    .qs     (perf_ctr_stall_cycles_qs)
+      // to register interface (read)
+      .qs(perf_ctr_stall_cycles_qs)
   );
 
 
   // R[conf_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_conf_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (conf_addr_we),
-    .wd     (conf_addr_wd),
+      // from register interface
+      .we(conf_addr_we),
+      .wd(conf_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.conf_addr.de),
-    .d      (hw2reg.conf_addr.d ),
+      // from internal hardware
+      .de(hw2reg.conf_addr.de),
+      .d (hw2reg.conf_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.conf_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.conf_addr.q),
 
-    // to register interface (read)
-    .qs     (conf_addr_qs)
+      // to register interface (read)
+      .qs(conf_addr_qs)
   );
 
 
   // R[imn_0_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_imn_0_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_0_addr_we),
-    .wd     (imn_0_addr_wd),
+      // from register interface
+      .we(imn_0_addr_we),
+      .wd(imn_0_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_0_addr.de),
-    .d      (hw2reg.imn_0_addr.d ),
+      // from internal hardware
+      .de(hw2reg.imn_0_addr.de),
+      .d (hw2reg.imn_0_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_0_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_0_addr.q),
 
-    // to register interface (read)
-    .qs     (imn_0_addr_qs)
+      // to register interface (read)
+      .qs(imn_0_addr_qs)
   );
 
 
@@ -546,80 +546,80 @@ module strela_reg_top #(
 
   //   F[imn_0_size]: 15:0
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_0_param_imn_0_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_0_param_imn_0_size_we),
-    .wd     (imn_0_param_imn_0_size_wd),
+      // from register interface
+      .we(imn_0_param_imn_0_size_we),
+      .wd(imn_0_param_imn_0_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_0_param.imn_0_size.de),
-    .d      (hw2reg.imn_0_param.imn_0_size.d ),
+      // from internal hardware
+      .de(hw2reg.imn_0_param.imn_0_size.de),
+      .d (hw2reg.imn_0_param.imn_0_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_0_param.imn_0_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_0_param.imn_0_size.q),
 
-    // to register interface (read)
-    .qs     (imn_0_param_imn_0_size_qs)
+      // to register interface (read)
+      .qs(imn_0_param_imn_0_size_qs)
   );
 
 
   //   F[imn_0_stride]: 31:16
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_0_param_imn_0_stride (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_0_param_imn_0_stride_we),
-    .wd     (imn_0_param_imn_0_stride_wd),
+      // from register interface
+      .we(imn_0_param_imn_0_stride_we),
+      .wd(imn_0_param_imn_0_stride_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_0_param.imn_0_stride.de),
-    .d      (hw2reg.imn_0_param.imn_0_stride.d ),
+      // from internal hardware
+      .de(hw2reg.imn_0_param.imn_0_stride.de),
+      .d (hw2reg.imn_0_param.imn_0_stride.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_0_param.imn_0_stride.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_0_param.imn_0_stride.q),
 
-    // to register interface (read)
-    .qs     (imn_0_param_imn_0_stride_qs)
+      // to register interface (read)
+      .qs(imn_0_param_imn_0_stride_qs)
   );
 
 
   // R[imn_1_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_imn_1_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_1_addr_we),
-    .wd     (imn_1_addr_wd),
+      // from register interface
+      .we(imn_1_addr_we),
+      .wd(imn_1_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_1_addr.de),
-    .d      (hw2reg.imn_1_addr.d ),
+      // from internal hardware
+      .de(hw2reg.imn_1_addr.de),
+      .d (hw2reg.imn_1_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_1_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_1_addr.q),
 
-    // to register interface (read)
-    .qs     (imn_1_addr_qs)
+      // to register interface (read)
+      .qs(imn_1_addr_qs)
   );
 
 
@@ -627,80 +627,80 @@ module strela_reg_top #(
 
   //   F[imn_1_size]: 15:0
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_1_param_imn_1_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_1_param_imn_1_size_we),
-    .wd     (imn_1_param_imn_1_size_wd),
+      // from register interface
+      .we(imn_1_param_imn_1_size_we),
+      .wd(imn_1_param_imn_1_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_1_param.imn_1_size.de),
-    .d      (hw2reg.imn_1_param.imn_1_size.d ),
+      // from internal hardware
+      .de(hw2reg.imn_1_param.imn_1_size.de),
+      .d (hw2reg.imn_1_param.imn_1_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_1_param.imn_1_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_1_param.imn_1_size.q),
 
-    // to register interface (read)
-    .qs     (imn_1_param_imn_1_size_qs)
+      // to register interface (read)
+      .qs(imn_1_param_imn_1_size_qs)
   );
 
 
   //   F[imn_1_stride]: 31:16
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_1_param_imn_1_stride (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_1_param_imn_1_stride_we),
-    .wd     (imn_1_param_imn_1_stride_wd),
+      // from register interface
+      .we(imn_1_param_imn_1_stride_we),
+      .wd(imn_1_param_imn_1_stride_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_1_param.imn_1_stride.de),
-    .d      (hw2reg.imn_1_param.imn_1_stride.d ),
+      // from internal hardware
+      .de(hw2reg.imn_1_param.imn_1_stride.de),
+      .d (hw2reg.imn_1_param.imn_1_stride.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_1_param.imn_1_stride.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_1_param.imn_1_stride.q),
 
-    // to register interface (read)
-    .qs     (imn_1_param_imn_1_stride_qs)
+      // to register interface (read)
+      .qs(imn_1_param_imn_1_stride_qs)
   );
 
 
   // R[imn_2_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_imn_2_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_2_addr_we),
-    .wd     (imn_2_addr_wd),
+      // from register interface
+      .we(imn_2_addr_we),
+      .wd(imn_2_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_2_addr.de),
-    .d      (hw2reg.imn_2_addr.d ),
+      // from internal hardware
+      .de(hw2reg.imn_2_addr.de),
+      .d (hw2reg.imn_2_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_2_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_2_addr.q),
 
-    // to register interface (read)
-    .qs     (imn_2_addr_qs)
+      // to register interface (read)
+      .qs(imn_2_addr_qs)
   );
 
 
@@ -708,80 +708,80 @@ module strela_reg_top #(
 
   //   F[imn_2_size]: 15:0
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_2_param_imn_2_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_2_param_imn_2_size_we),
-    .wd     (imn_2_param_imn_2_size_wd),
+      // from register interface
+      .we(imn_2_param_imn_2_size_we),
+      .wd(imn_2_param_imn_2_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_2_param.imn_2_size.de),
-    .d      (hw2reg.imn_2_param.imn_2_size.d ),
+      // from internal hardware
+      .de(hw2reg.imn_2_param.imn_2_size.de),
+      .d (hw2reg.imn_2_param.imn_2_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_2_param.imn_2_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_2_param.imn_2_size.q),
 
-    // to register interface (read)
-    .qs     (imn_2_param_imn_2_size_qs)
+      // to register interface (read)
+      .qs(imn_2_param_imn_2_size_qs)
   );
 
 
   //   F[imn_2_stride]: 31:16
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_2_param_imn_2_stride (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_2_param_imn_2_stride_we),
-    .wd     (imn_2_param_imn_2_stride_wd),
+      // from register interface
+      .we(imn_2_param_imn_2_stride_we),
+      .wd(imn_2_param_imn_2_stride_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_2_param.imn_2_stride.de),
-    .d      (hw2reg.imn_2_param.imn_2_stride.d ),
+      // from internal hardware
+      .de(hw2reg.imn_2_param.imn_2_stride.de),
+      .d (hw2reg.imn_2_param.imn_2_stride.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_2_param.imn_2_stride.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_2_param.imn_2_stride.q),
 
-    // to register interface (read)
-    .qs     (imn_2_param_imn_2_stride_qs)
+      // to register interface (read)
+      .qs(imn_2_param_imn_2_stride_qs)
   );
 
 
   // R[imn_3_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_imn_3_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_3_addr_we),
-    .wd     (imn_3_addr_wd),
+      // from register interface
+      .we(imn_3_addr_we),
+      .wd(imn_3_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_3_addr.de),
-    .d      (hw2reg.imn_3_addr.d ),
+      // from internal hardware
+      .de(hw2reg.imn_3_addr.de),
+      .d (hw2reg.imn_3_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_3_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_3_addr.q),
 
-    // to register interface (read)
-    .qs     (imn_3_addr_qs)
+      // to register interface (read)
+      .qs(imn_3_addr_qs)
   );
 
 
@@ -789,269 +789,269 @@ module strela_reg_top #(
 
   //   F[imn_3_size]: 15:0
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_3_param_imn_3_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_3_param_imn_3_size_we),
-    .wd     (imn_3_param_imn_3_size_wd),
+      // from register interface
+      .we(imn_3_param_imn_3_size_we),
+      .wd(imn_3_param_imn_3_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_3_param.imn_3_size.de),
-    .d      (hw2reg.imn_3_param.imn_3_size.d ),
+      // from internal hardware
+      .de(hw2reg.imn_3_param.imn_3_size.de),
+      .d (hw2reg.imn_3_param.imn_3_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_3_param.imn_3_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_3_param.imn_3_size.q),
 
-    // to register interface (read)
-    .qs     (imn_3_param_imn_3_size_qs)
+      // to register interface (read)
+      .qs(imn_3_param_imn_3_size_qs)
   );
 
 
   //   F[imn_3_stride]: 31:16
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_imn_3_param_imn_3_stride (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (imn_3_param_imn_3_stride_we),
-    .wd     (imn_3_param_imn_3_stride_wd),
+      // from register interface
+      .we(imn_3_param_imn_3_stride_we),
+      .wd(imn_3_param_imn_3_stride_wd),
 
-    // from internal hardware
-    .de     (hw2reg.imn_3_param.imn_3_stride.de),
-    .d      (hw2reg.imn_3_param.imn_3_stride.d ),
+      // from internal hardware
+      .de(hw2reg.imn_3_param.imn_3_stride.de),
+      .d (hw2reg.imn_3_param.imn_3_stride.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.imn_3_param.imn_3_stride.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.imn_3_param.imn_3_stride.q),
 
-    // to register interface (read)
-    .qs     (imn_3_param_imn_3_stride_qs)
+      // to register interface (read)
+      .qs(imn_3_param_imn_3_stride_qs)
   );
 
 
   // R[omn_0_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_omn_0_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_0_addr_we),
-    .wd     (omn_0_addr_wd),
+      // from register interface
+      .we(omn_0_addr_we),
+      .wd(omn_0_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_0_addr.de),
-    .d      (hw2reg.omn_0_addr.d ),
+      // from internal hardware
+      .de(hw2reg.omn_0_addr.de),
+      .d (hw2reg.omn_0_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_0_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_0_addr.q),
 
-    // to register interface (read)
-    .qs     (omn_0_addr_qs)
+      // to register interface (read)
+      .qs(omn_0_addr_qs)
   );
 
 
   // R[omn_0_size]: V(False)
 
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_omn_0_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_0_size_we),
-    .wd     (omn_0_size_wd),
+      // from register interface
+      .we(omn_0_size_we),
+      .wd(omn_0_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_0_size.de),
-    .d      (hw2reg.omn_0_size.d ),
+      // from internal hardware
+      .de(hw2reg.omn_0_size.de),
+      .d (hw2reg.omn_0_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_0_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_0_size.q),
 
-    // to register interface (read)
-    .qs     (omn_0_size_qs)
+      // to register interface (read)
+      .qs(omn_0_size_qs)
   );
 
 
   // R[omn_1_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_omn_1_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_1_addr_we),
-    .wd     (omn_1_addr_wd),
+      // from register interface
+      .we(omn_1_addr_we),
+      .wd(omn_1_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_1_addr.de),
-    .d      (hw2reg.omn_1_addr.d ),
+      // from internal hardware
+      .de(hw2reg.omn_1_addr.de),
+      .d (hw2reg.omn_1_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_1_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_1_addr.q),
 
-    // to register interface (read)
-    .qs     (omn_1_addr_qs)
+      // to register interface (read)
+      .qs(omn_1_addr_qs)
   );
 
 
   // R[omn_1_size]: V(False)
 
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_omn_1_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_1_size_we),
-    .wd     (omn_1_size_wd),
+      // from register interface
+      .we(omn_1_size_we),
+      .wd(omn_1_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_1_size.de),
-    .d      (hw2reg.omn_1_size.d ),
+      // from internal hardware
+      .de(hw2reg.omn_1_size.de),
+      .d (hw2reg.omn_1_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_1_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_1_size.q),
 
-    // to register interface (read)
-    .qs     (omn_1_size_qs)
+      // to register interface (read)
+      .qs(omn_1_size_qs)
   );
 
 
   // R[omn_2_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_omn_2_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_2_addr_we),
-    .wd     (omn_2_addr_wd),
+      // from register interface
+      .we(omn_2_addr_we),
+      .wd(omn_2_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_2_addr.de),
-    .d      (hw2reg.omn_2_addr.d ),
+      // from internal hardware
+      .de(hw2reg.omn_2_addr.de),
+      .d (hw2reg.omn_2_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_2_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_2_addr.q),
 
-    // to register interface (read)
-    .qs     (omn_2_addr_qs)
+      // to register interface (read)
+      .qs(omn_2_addr_qs)
   );
 
 
   // R[omn_2_size]: V(False)
 
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_omn_2_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_2_size_we),
-    .wd     (omn_2_size_wd),
+      // from register interface
+      .we(omn_2_size_we),
+      .wd(omn_2_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_2_size.de),
-    .d      (hw2reg.omn_2_size.d ),
+      // from internal hardware
+      .de(hw2reg.omn_2_size.de),
+      .d (hw2reg.omn_2_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_2_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_2_size.q),
 
-    // to register interface (read)
-    .qs     (omn_2_size_qs)
+      // to register interface (read)
+      .qs(omn_2_size_qs)
   );
 
 
   // R[omn_3_addr]: V(False)
 
   prim_subreg #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+      .DW      (32),
+      .SWACCESS("RW"),
+      .RESVAL  (32'h0)
   ) u_omn_3_addr (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_3_addr_we),
-    .wd     (omn_3_addr_wd),
+      // from register interface
+      .we(omn_3_addr_we),
+      .wd(omn_3_addr_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_3_addr.de),
-    .d      (hw2reg.omn_3_addr.d ),
+      // from internal hardware
+      .de(hw2reg.omn_3_addr.de),
+      .d (hw2reg.omn_3_addr.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_3_addr.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_3_addr.q),
 
-    // to register interface (read)
-    .qs     (omn_3_addr_qs)
+      // to register interface (read)
+      .qs(omn_3_addr_qs)
   );
 
 
   // R[omn_3_size]: V(False)
 
   prim_subreg #(
-    .DW      (16),
-    .SWACCESS("RW"),
-    .RESVAL  (16'h0)
+      .DW      (16),
+      .SWACCESS("RW"),
+      .RESVAL  (16'h0)
   ) u_omn_3_size (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
+      .clk_i (clk_i),
+      .rst_ni(rst_ni),
 
-    // from register interface
-    .we     (omn_3_size_we),
-    .wd     (omn_3_size_wd),
+      // from register interface
+      .we(omn_3_size_we),
+      .wd(omn_3_size_wd),
 
-    // from internal hardware
-    .de     (hw2reg.omn_3_size.de),
-    .d      (hw2reg.omn_3_size.d ),
+      // from internal hardware
+      .de(hw2reg.omn_3_size.de),
+      .d (hw2reg.omn_3_size.d),
 
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.omn_3_size.q ),
+      // to internal hardware
+      .qe(),
+      .q (reg2hw.omn_3_size.q),
 
-    // to register interface (read)
-    .qs     (omn_3_size_qs)
+      // to register interface (read)
+      .qs(omn_3_size_qs)
   );
 
 
@@ -1060,16 +1060,16 @@ module strela_reg_top #(
   logic [23:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[ 0] = (reg_addr == STRELA_CTRL_OFFSET);
-    addr_hit[ 1] = (reg_addr == STRELA_MODE_OFFSET);
-    addr_hit[ 2] = (reg_addr == STRELA_STATUS_OFFSET);
-    addr_hit[ 3] = (reg_addr == STRELA_PERF_CTR_TOTAL_CYCLES_OFFSET);
-    addr_hit[ 4] = (reg_addr == STRELA_PERF_CTR_EXEC_CYCLES_OFFSET);
-    addr_hit[ 5] = (reg_addr == STRELA_PERF_CTR_CONF_CYCLES_OFFSET);
-    addr_hit[ 6] = (reg_addr == STRELA_PERF_CTR_STALL_CYCLES_OFFSET);
-    addr_hit[ 7] = (reg_addr == STRELA_CONF_ADDR_OFFSET);
-    addr_hit[ 8] = (reg_addr == STRELA_IMN_0_ADDR_OFFSET);
-    addr_hit[ 9] = (reg_addr == STRELA_IMN_0_PARAM_OFFSET);
+    addr_hit[0] = (reg_addr == STRELA_CTRL_OFFSET);
+    addr_hit[1] = (reg_addr == STRELA_MODE_OFFSET);
+    addr_hit[2] = (reg_addr == STRELA_STATUS_OFFSET);
+    addr_hit[3] = (reg_addr == STRELA_PERF_CTR_TOTAL_CYCLES_OFFSET);
+    addr_hit[4] = (reg_addr == STRELA_PERF_CTR_EXEC_CYCLES_OFFSET);
+    addr_hit[5] = (reg_addr == STRELA_PERF_CTR_CONF_CYCLES_OFFSET);
+    addr_hit[6] = (reg_addr == STRELA_PERF_CTR_STALL_CYCLES_OFFSET);
+    addr_hit[7] = (reg_addr == STRELA_CONF_ADDR_OFFSET);
+    addr_hit[8] = (reg_addr == STRELA_IMN_0_ADDR_OFFSET);
+    addr_hit[9] = (reg_addr == STRELA_IMN_0_PARAM_OFFSET);
     addr_hit[10] = (reg_addr == STRELA_IMN_1_ADDR_OFFSET);
     addr_hit[11] = (reg_addr == STRELA_IMN_1_PARAM_OFFSET);
     addr_hit[12] = (reg_addr == STRELA_IMN_2_ADDR_OFFSET);
@@ -1086,7 +1086,7 @@ module strela_reg_top #(
     addr_hit[23] = (reg_addr == STRELA_OMN_3_SIZE_OFFSET);
   end
 
-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
 
   // Check sub-word write is permitted
   always_comb begin
@@ -1248,7 +1248,7 @@ module strela_reg_top #(
       end
 
       addr_hit[9]: begin
-        reg_rdata_next[15:0] = imn_0_param_imn_0_size_qs;
+        reg_rdata_next[15:0]  = imn_0_param_imn_0_size_qs;
         reg_rdata_next[31:16] = imn_0_param_imn_0_stride_qs;
       end
 
@@ -1257,7 +1257,7 @@ module strela_reg_top #(
       end
 
       addr_hit[11]: begin
-        reg_rdata_next[15:0] = imn_1_param_imn_1_size_qs;
+        reg_rdata_next[15:0]  = imn_1_param_imn_1_size_qs;
         reg_rdata_next[31:16] = imn_1_param_imn_1_stride_qs;
       end
 
@@ -1266,7 +1266,7 @@ module strela_reg_top #(
       end
 
       addr_hit[13]: begin
-        reg_rdata_next[15:0] = imn_2_param_imn_2_size_qs;
+        reg_rdata_next[15:0]  = imn_2_param_imn_2_size_qs;
         reg_rdata_next[31:16] = imn_2_param_imn_2_stride_qs;
       end
 
@@ -1275,7 +1275,7 @@ module strela_reg_top #(
       end
 
       addr_hit[15]: begin
-        reg_rdata_next[15:0] = imn_3_param_imn_3_size_qs;
+        reg_rdata_next[15:0]  = imn_3_param_imn_3_size_qs;
         reg_rdata_next[31:16] = imn_3_param_imn_3_stride_qs;
       end
 
@@ -1331,24 +1331,23 @@ module strela_reg_top #(
 
 endmodule
 
-module strela_reg_top_intf
-#(
-  parameter int AW = 7,
-  localparam int DW = 32
+module strela_reg_top_intf #(
+    parameter  int AW = 7,
+    localparam int DW = 32
 ) (
-  input logic clk_i,
-  input logic rst_ni,
-  REG_BUS.in  regbus_slave,
-  // To HW
-  output strela_reg_pkg::strela_reg2hw_t reg2hw, // Write
-  input  strela_reg_pkg::strela_hw2reg_t hw2reg, // Read
-  // Config
-  input devmode_i // If 1, explicit error return for unmapped register access
+    input logic clk_i,
+    input logic rst_ni,
+    REG_BUS.in regbus_slave,
+    // To HW
+    output strela_reg_pkg::strela_reg2hw_t reg2hw,  // Write
+    input strela_reg_pkg::strela_hw2reg_t hw2reg,  // Read
+    // Config
+    input devmode_i  // If 1, explicit error return for unmapped register access
 );
- localparam int unsigned STRB_WIDTH = DW/8;
+  localparam int unsigned STRB_WIDTH = DW / 8;
 
-`include "register_interface/typedef.svh"
-`include "register_interface/assign.svh"
+  `include "register_interface/typedef.svh"
+  `include "register_interface/assign.svh"
 
   // Define structs for reg_bus
   typedef logic [AW-1:0] addr_t;
@@ -1358,27 +1357,27 @@ module strela_reg_top_intf
 
   reg_bus_req_t s_reg_req;
   reg_bus_rsp_t s_reg_rsp;
-  
+
   // Assign SV interface to structs
   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
 
-  
+
 
   strela_reg_top #(
-    .reg_req_t(reg_bus_req_t),
-    .reg_rsp_t(reg_bus_rsp_t),
-    .AW(AW)
+      .reg_req_t(reg_bus_req_t),
+      .reg_rsp_t(reg_bus_rsp_t),
+      .AW(AW)
   ) i_regs (
-    .clk_i,
-    .rst_ni,
-    .reg_req_i(s_reg_req),
-    .reg_rsp_o(s_reg_rsp),
-    .reg2hw, // Write
-    .hw2reg, // Read
-    .devmode_i
+      .clk_i,
+      .rst_ni,
+      .reg_req_i(s_reg_req),
+      .reg_rsp_o(s_reg_rsp),
+      .reg2hw,  // Write
+      .hw2reg,  // Read
+      .devmode_i
   );
-  
+
 endmodule
 
 

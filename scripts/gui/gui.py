@@ -80,12 +80,19 @@ west_dest_images = {
     "fu_cin": img_west_3
 }
 
+fu_operations = ["add", "mul", "sub", "SL", "SRL", "SRA", "AND", "OR", "XOR", ">0", "=0", "mux", "branch", "merge"]
+
 # Create main window
 window = tk.Tk()
 window.title("PE Configuration")
 
 # Create PE configuration instance
 pe_config = PEConfiguration()
+
+def update_bitstream():
+    bitstream = pe_config.bitstream()
+    bitstream_str = ", ".join(f"W{i}: {word:08X}" for i, word in enumerate(bitstream))
+    bitstream_label.config(text=f"Bitstream:\n\n\t{bitstream_str}")
 
 # Function to build combined image based on checkbox state
 def update_image():
@@ -167,10 +174,38 @@ def update_image():
     img_label.config(image=tk_img)
     img_label.image = tk_img
 
-    # Update bitstream
-    bitstream = pe_config.bitstream()
-    bitstream_str = ", ".join(f"W{i}: {word:08X}" for i, word in enumerate(bitstream))
-    bitstream_label.config(text=f"Bitstream:\n\n\t{bitstream_str}")
+    update_bitstream()
+
+def update_fu_operation(event):
+    pe_config.set_fu_operation(fu_operation.get())
+    update_bitstream()
+
+def update_constant(*args):
+    try:
+        value = int(const_value.get(), 0)
+        pe_config.set_constant_value(value)
+        update_bitstream()
+    except ValueError:
+        pe_config.set_constant_value(0)
+        update_bitstream()
+        pass
+
+def update_initial_value(*args):
+    try:
+        value = int(initial_value.get(), 0)
+        pe_config.set_initial_value(value)
+        update_bitstream()
+    except ValueError:
+        pe_config.set_initial_value(0)
+        update_bitstream()
+        pass
+
+def update_initial_valid():
+    if initial_valid.get():
+        pe_config.set_initial_valid()
+    else:
+        pe_config.unset_initial_valid()
+    update_bitstream()
 
 # Boolean variables for checkboxes
 var_north_in = tk.BooleanVar()
@@ -238,6 +273,40 @@ for dest in west_dest_order:
     chk = tk.Checkbutton(west_dest_frame, text=dest, variable=var, command=update_image)
     chk.pack(side="left")
     west_dest_vars[dest] = var
+
+# Separator before FU parameters
+separator = ttk.Separator(window, orient='horizontal')
+separator.pack(fill='x', padx=10, pady=10)
+
+# FU parameters
+fu_operation = tk.StringVar()
+
+operations_label = tk.Label(window, text="FU operation:")
+operations_label.pack(anchor="w", padx=10, pady=(10, 0))
+operations = ttk.Combobox(window, textvariable=fu_operation, values=fu_operations, state='readonly')
+operations.current(0)
+operations.pack(anchor="w", padx=30, pady=(10, 0))
+
+operations.bind("<<ComboboxSelected>>", update_fu_operation)
+
+const_value = tk.StringVar()
+initial_value = tk.StringVar()
+initial_valid = tk.BooleanVar()
+
+fu_frame1 = tk.Frame(window)
+fu_frame1.pack(pady=10, fill="x")
+tk.Label(fu_frame1, text="Constant:").pack(side="left", padx=(10, 5))
+const_entry = tk.Entry(fu_frame1, textvariable=const_value, width=10)
+const_entry.pack(side="left")
+
+tk.Label(fu_frame1, text="Initial value:").pack(side="left", padx=(10, 5))
+initial_value_entry = tk.Entry(fu_frame1, textvariable=initial_value, width=10)
+initial_value_entry.pack(side="left")
+
+tk.Checkbutton(fu_frame1, text=" Initial valid", variable=initial_valid, command=update_initial_valid).pack(side="left")
+
+const_value.trace_add("write", update_constant)
+initial_value.trace_add("write", update_initial_value)
 
 # Separator before image
 separator = ttk.Separator(window, orient='horizontal')

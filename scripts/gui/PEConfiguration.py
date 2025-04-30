@@ -222,7 +222,12 @@ class PEConfiguration:
 
     def set_initial_value(self, value):
         self.initial_value = value
+    
+    def set_initial_valid(self):
         self.initial_valid = True
+    
+    def unset_initial_valid(self):
+        self.initial_valid = False
     
     # FU Outputs
     def set_fu_destinations(self, destination):
@@ -249,9 +254,9 @@ class PEConfiguration:
 
         word_1 = word_1_2 & 0xFFFFFFFF
         word_2 = word_1_2 >> 32
-        word_3 = self.initial_value
-        word_4 = self.constant
-        word_5 = self.delay_value
+        word_3 = self.initial_value & 0xFFFFFFFF
+        word_4 = self.constant & 0xFFFFFFFF
+        word_5 = self.delay_value & 0xFFFF
         word_5 += (self.pe_inputs["north"] << 26) + (self.pe_inputs["east"] << 27) + (self.pe_inputs["south"] << 28) + (self.pe_inputs["west"] << 29)
         word_5 += (self.fu_inputs["fu_in1"] << 30) + (self.fu_inputs["fu_in2"] << 31)
 

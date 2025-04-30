@@ -38,7 +38,7 @@ jm_mode: 0
 # Mux selector FU_data : without feedback loop (0) | with feedback loop {scalar from register} (1)
 feedback: 0
 
-# ALU Operation : XOR (8) | OR (7) | AND (6) | SRA (5) | SRL (4) | SR (3) | substract (2) | multiply (1) | add (0)
+# ALU Operation : XOR (8) | OR (7) | AND (6) | SRA (5) | SRL (4) | SL (3) | substract (2) | multiply (1) | add (0)
 alu_sel: 0
 
 # Comparator Operation : greater than 0 (1) | equal to 0 (0)

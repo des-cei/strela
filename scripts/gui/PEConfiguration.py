@@ -31,7 +31,8 @@ class PEConfiguration:
         # FU inputs
         self.fu_inputs = {
             "fu_in1": False,
-            "fu_in2": False
+            "fu_in2": False,
+            "fu_cin": False
         }
         # FU input sources
         self.fu_input_sources = {
@@ -87,6 +88,13 @@ class PEConfiguration:
             self.pe_inputs[input] = True
         else:
             raise ValueError(f"Invalid input: {input}")
+    
+    def unset_pe_input(self, input):
+        if input in self.pe_inputs:
+            self.unset_all_input_destinations(input)
+            self.pe_inputs[input] = False
+        else:
+            raise ValueError(f"Invalid input: {input}")
 
     def get_pe_input(self, input):
         if input in self.pe_inputs:
@@ -103,10 +111,27 @@ class PEConfiguration:
             self.fs_inputs[source] |= (1 << self.fs_inputs_destinations[source].index(destination))
             if destination in ['fu_cin','fu_in2', 'fu_in1']:
                 self.sel_fu[destination] = self.fu_input_sources[destination].index(source)
-                if destination != 'fu_cin':
-                    self.fu_inputs[destination] = True
+                self.fu_inputs[destination] = True
             else:
                 self.pe_outputs[destination] = self.pe_output_sources[destination].index(source)
+        else:
+            raise ValueError(f"Invalid source: {source} or destination: {destination}")
+    
+    def unset_input_destinations(self, source, destination):
+        if source in self.fs_inputs_destinations and destination in self.fs_inputs_destinations[source]:
+            self.fs_inputs[source] &= ~(1 << self.fs_inputs_destinations[source].index(destination))
+            if destination in ['fu_cin','fu_in2', 'fu_in1']:
+                self.sel_fu[destination] = 0
+                self.fu_inputs[destination] = False
+            else:
+                self.pe_outputs[destination] = 0
+        else:
+            raise ValueError(f"Invalid source: {source} or destination: {destination}")
+    
+    def unset_all_input_destinations(self, source):
+        if source in self.fs_inputs_destinations:
+            for destination in self.fs_inputs_destinations[source]:
+                self.unset_input_destinations(source, destination)
         else:
             raise ValueError(f"Invalid source: {source} or destination: {destination}")
 

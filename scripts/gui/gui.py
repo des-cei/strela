@@ -93,14 +93,143 @@ def normalize_names(name):
         return " " + name[:2].upper() + name[2:]
     if name in ["east", "west"]:
         return " " + name.capitalize() + " "
-    return " " + name.capitalize()       
-
-# Create main window
-window = tk.Tk()
-window.title("PE Configuration")
+    return " " + name.capitalize()
 
 # Create PE configuration instance
-pe_config = PEConfiguration()
+pe_id = 0
+pe_array = [PEConfiguration() for _ in range(16)]
+pe_config = pe_array[pe_id]
+
+# PE images
+combined = [pe_base.copy() for _ in range(16)]
+
+###########################################################
+#  CGRA window
+###########################################################
+
+cgra_window = tk.Tk()
+cgra_window.title("CGRA configuration")  
+
+rows, cols = 4, 4
+
+# Load initial PE images
+pe_tk_images = []
+for i in range(16):
+    pe_tk_images.append(ImageTk.PhotoImage(combined[i].resize((150, 150), Image.LANCZOS)))
+pe_img_refs = []
+
+def update_pe_id(index):
+    global pe_id, pe_config
+    pe_id = index
+    pe_config = pe_array[index]
+
+    update_gui_from_pe()
+
+pe_buttons = []
+
+for row in range(rows):
+    for col in range(cols):
+        index = col + row * 4
+        btn = tk.Button(
+            cgra_window,
+            image=pe_tk_images[index],
+            command=lambda i=index: update_pe_id(i),
+            background=cgra_window["background"],
+            activebackground=cgra_window["background"],
+            borderwidth=0
+        )
+        btn.grid(row=row, column=col, padx=5, pady=5)
+        pe_img_refs.append(pe_tk_images[index])
+        pe_buttons.append(btn)
+
+# Update CGRA
+def update_pe_images(index):
+    updated_img = combined[index].resize((150, 150), Image.LANCZOS)
+    tk_img = ImageTk.PhotoImage(updated_img)
+    pe_tk_images[index] = tk_img
+
+    pe_buttons[index].config(image=tk_img)
+    pe_buttons[index].image = tk_img
+
+def update_gui_from_pe():
+    # Actualiza los checkboxes de inputs
+    var_north_in.set(pe_config.get_pe_input("north"))
+    var_east_in.set(pe_config.get_pe_input("east"))
+    var_south_in.set(pe_config.get_pe_input("south"))
+    var_west_in.set(pe_config.get_pe_input("west"))
+
+    # Input Destinations
+    for dest in north_dest_order:
+        north_dest_vars[dest].set(pe_config.get_input_destinations("north", dest))
+    for dest in east_dest_order:
+        east_dest_vars[dest].set(pe_config.get_input_destinations("east", dest))
+    for dest in south_dest_order:
+        south_dest_vars[dest].set(pe_config.get_input_destinations("south", dest))
+    for dest in west_dest_order:
+        west_dest_vars[dest].set(pe_config.get_input_destinations("west", dest))
+
+    # FU operation
+    fu_operation.set(pe_config.get_fu_operation())
+
+    # FU extras
+    feedback.set(pe_config.get_fu_feedback())
+    const_value.set(str(pe_config.get_constant_value()))
+    initial_value.set(str(pe_config.get_initial_value()))
+    initial_valid.set(pe_config.get_initial_valid())
+    delay_value.set(pe_config.get_delay_value())
+
+    # FU destinations
+    var_north_out.set(pe_config.get_fu_destinations("north"))
+    var_east_out.set(pe_config.get_fu_destinations("east"))
+    var_south_out.set(pe_config.get_fu_destinations("south"))
+    var_west_out.set(pe_config.get_fu_destinations("west"))
+
+    # FU output type
+    if pe_config.get_delay("north"):
+        fu_north_type.set("fu_delay")
+    elif pe_config.get_branch1_output("north"):
+        fu_north_type.set("branch1")
+    elif pe_config.get_branch2_output("north"):
+        fu_north_type.set("branch2")
+    else:
+        fu_north_type.set("fu")
+
+    if pe_config.get_delay("east"):
+        fu_east_type.set("fu_delay")
+    elif pe_config.get_branch1_output("east"):
+        fu_east_type.set("branch1")
+    elif pe_config.get_branch2_output("east"):
+        fu_east_type.set("branch2")
+    else:
+        fu_east_type.set("fu")
+
+    if pe_config.get_delay("south"):
+        fu_south_type.set("fu_delay")
+    elif pe_config.get_branch1_output("south"):
+        fu_south_type.set("branch1")
+    elif pe_config.get_branch2_output("south"):
+        fu_south_type.set("branch2")
+    else:
+        fu_south_type.set("fu")
+
+    if pe_config.get_delay("west"):
+        fu_west_type.set("fu_delay")
+    elif pe_config.get_branch1_output("west"):
+        fu_west_type.set("branch1")
+    elif pe_config.get_branch2_output("west"):
+        fu_west_type.set("branch2")
+    else:
+        fu_west_type.set("fu")
+
+    update_image()
+
+
+###########################################################
+#  PE window
+###########################################################
+
+pe_window = tk.Toplevel(cgra_window)
+pe_window.title("PE Configuration")
 
 def update_bitstream():
     bitstream = pe_config.bitstream()
@@ -109,18 +238,18 @@ def update_bitstream():
 
 # Function to build combined image based on checkbox state
 def update_image():
-    combined = pe_base.copy()
+    combined[pe_id] = pe_base.copy()
 
     # North PE input
     if var_north_in.get():
         pe_config.set_pe_input("north")
-        combined = Image.alpha_composite(combined, img_north_in)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_north_in)
         north_dest_frame.pack(side="left")
 
         for dest, var in north_dest_vars.items():
             if var.get() and dest in north_dest_images:
                 pe_config.set_input_destinations("north", dest)
-                combined = Image.alpha_composite(combined, north_dest_images[dest])
+                combined[pe_id] = Image.alpha_composite(combined[pe_id], north_dest_images[dest])
             else:
                 pe_config.unset_input_destinations("north", dest)
     else:
@@ -131,13 +260,13 @@ def update_image():
     # East PE input
     if var_east_in.get():
         pe_config.set_pe_input("east")
-        combined = Image.alpha_composite(combined, img_east_in)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_east_in)
         east_dest_frame.pack(side="left")
 
         for dest, var in east_dest_vars.items():
             if var.get() and dest in east_dest_images:
                 pe_config.set_input_destinations("east", dest)
-                combined = Image.alpha_composite(combined, east_dest_images[dest])
+                combined[pe_id] = Image.alpha_composite(combined[pe_id], east_dest_images[dest])
             else:
                 pe_config.unset_input_destinations("east", dest)
     else:
@@ -148,13 +277,13 @@ def update_image():
     # South PE input
     if var_south_in.get():
         pe_config.set_pe_input("south")
-        combined = Image.alpha_composite(combined, img_south_in)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_south_in)
         south_dest_frame.pack(side="left")
 
         for dest, var in south_dest_vars.items():
             if var.get() and dest in south_dest_images:
                 pe_config.set_input_destinations("south", dest)
-                combined = Image.alpha_composite(combined, south_dest_images[dest])
+                combined[pe_id] = Image.alpha_composite(combined[pe_id], south_dest_images[dest])
             else:
                 pe_config.unset_input_destinations("south", dest)
     else:
@@ -165,13 +294,13 @@ def update_image():
     # West PE input
     if var_west_in.get():
         pe_config.set_pe_input("west")
-        combined = Image.alpha_composite(combined, img_west_in)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_west_in)
         west_dest_frame.pack(side="left")
 
         for dest, var in west_dest_vars.items():
             if var.get() and dest in west_dest_images:
                 pe_config.set_input_destinations("west", dest)
-                combined = Image.alpha_composite(combined, west_dest_images[dest])
+                combined[pe_id] = Image.alpha_composite(combined[pe_id], west_dest_images[dest])
             else:
                 pe_config.unset_input_destinations("west", dest)
     else:
@@ -181,13 +310,13 @@ def update_image():
 
     # FU
     if pe_config.get_fu_input("fu_in1") or pe_config.get_fu_input("fu_in2") or pe_config.get_fu_input("fu_cin"):
-        combined = Image.alpha_composite(combined, img_fu)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_fu)
 
     # FU destinations
     if var_north_out.get():
         pe_config.set_fu_destinations("north")
         north_fu_dest.pack(side="left")
-        combined = Image.alpha_composite(combined, img_fu_n)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_fu_n)
     else:
         pe_config.unset_fu_destinations("north")
         north_fu_dest.pack_forget()
@@ -195,7 +324,7 @@ def update_image():
     if var_east_out.get():
         pe_config.set_fu_destinations("east")
         east_fu_dest.pack(side="left")
-        combined = Image.alpha_composite(combined, img_fu_e)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_fu_e)
     else:
         pe_config.unset_fu_destinations("east")
         east_fu_dest.pack_forget()
@@ -203,7 +332,7 @@ def update_image():
     if var_south_out.get():
         pe_config.set_fu_destinations("south")
         south_fu_dest.pack(side="left")
-        combined = Image.alpha_composite(combined, img_fu_s)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_fu_s)
     else:
         pe_config.unset_fu_destinations("south")
         south_fu_dest.pack_forget()
@@ -211,16 +340,17 @@ def update_image():
     if var_west_out.get():
         pe_config.set_fu_destinations("west")
         west_fu_dest.pack(side="left")
-        combined = Image.alpha_composite(combined, img_fu_w)
+        combined[pe_id] = Image.alpha_composite(combined[pe_id], img_fu_w)
     else:
         pe_config.unset_fu_destinations("west")
         west_fu_dest.pack_forget()
     
-    tk_img = ImageTk.PhotoImage(combined)
+    tk_img = ImageTk.PhotoImage(combined[pe_id])
     img_label.config(image=tk_img)
     img_label.image = tk_img
 
     update_bitstream()
+    update_pe_images(pe_id)
 
 def update_fu_operation(event):
     pe_config.set_fu_operation(fu_operation.get())
@@ -311,23 +441,23 @@ def update_fu2west(event):
     update_bitstream()
 
 # Label
-tk.Label(window, text="PE inputs | Input destinations:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
+tk.Label(pe_window, text="PE inputs | Input destinations:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
 
 # Boolean variables for checkboxes
 var_north_in = tk.BooleanVar()
-north_row_frame = tk.Frame(window)
+north_row_frame = tk.Frame(pe_window)
 north_row_frame.pack(anchor="w", padx=20)
 
 var_east_in = tk.BooleanVar()
-east_row_frame = tk.Frame(window)
+east_row_frame = tk.Frame(pe_window)
 east_row_frame.pack(anchor="w", padx=20)
 
 var_south_in = tk.BooleanVar()
-south_row_frame = tk.Frame(window)
+south_row_frame = tk.Frame(pe_window)
 south_row_frame.pack(anchor="w", padx=20)
 
 var_west_in = tk.BooleanVar()
-west_row_frame = tk.Frame(window)
+west_row_frame = tk.Frame(pe_window)
 west_row_frame.pack(anchor="w", padx=20)
 
 # Create checkboxes
@@ -381,14 +511,14 @@ for dest in west_dest_order:
     west_dest_vars[dest] = var
 
 # Separator before FU parameters
-separator = ttk.Separator(window, orient='horizontal')
+separator = ttk.Separator(pe_window, orient='horizontal')
 separator.pack(fill='x', padx=10, pady=10)
 
 # FU label
-tk.Label(window, text="FU configuration:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
+tk.Label(pe_window, text="FU configuration:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
 
 # FU parameters
-fu_frame1 = tk.Frame(window)
+fu_frame1 = tk.Frame(pe_window)
 fu_frame1.pack(padx= 20, pady=5, fill="x")
 
 fu_operation = tk.StringVar()
@@ -409,14 +539,16 @@ const_value = tk.StringVar()
 initial_value = tk.StringVar()
 initial_valid = tk.BooleanVar()
 
-fu_frame2 = tk.Frame(window)
+fu_frame2 = tk.Frame(pe_window)
 fu_frame2.pack(padx= 20, pady=5, fill="x")
 tk.Label(fu_frame2, text="Constant:").pack(side="left", padx=(5, 5))
 const_entry = tk.Entry(fu_frame2, textvariable=const_value, width=10)
+const_entry.insert(0, "0")
 const_entry.pack(side="left", padx=21)
 
 tk.Label(fu_frame2, text="Initial value:").pack(side="left", padx=(5, 5))
 initial_value_entry = tk.Entry(fu_frame2, textvariable=initial_value, width=10)
+initial_value_entry.insert(0, "0")
 initial_value_entry.pack(side="left")
 
 tk.Checkbutton(fu_frame2, text=" Initial valid", variable=initial_valid, command=update_initial_valid).pack(side="left", padx=(10))
@@ -424,38 +556,38 @@ tk.Checkbutton(fu_frame2, text=" Initial valid", variable=initial_valid, command
 const_value.trace_add("write", update_constant)
 initial_value.trace_add("write", update_initial_value)
 
-fu_frame3 = tk.Frame(window)
+fu_frame3 = tk.Frame(pe_window)
 fu_frame3.pack(padx=20 ,pady=5, fill="x")
 tk.Label(fu_frame3, text="Delay value:").pack(side="left", padx=(5, 5))
 delay_value = tk.StringVar()
 delay_entry = tk.Entry(fu_frame3, textvariable=delay_value, width=10)
-# delay_entry.insert(0, "0")
+delay_entry.insert(0, "0")
 delay_entry.pack(side="left")
 delay_value.trace_add("write", update_delay)
 
 # Separator before FU destinations
-separator = ttk.Separator(window, orient='horizontal')
+separator = ttk.Separator(pe_window, orient='horizontal')
 separator.pack(fill='x', padx=10, pady=10)
 
 # FU destinations label
-tk.Label(window, text="FU destinations:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
+tk.Label(pe_window, text="FU destinations:", font=("Courier", 10), anchor="w", justify="left").pack(fill="x", padx=10, pady=5)
 
 # FU destinations
 # Boolean variables for checkboxes
 var_north_out = tk.BooleanVar()
-north_row_frame2 = tk.Frame(window)
+north_row_frame2 = tk.Frame(pe_window)
 north_row_frame2.pack(anchor="w", padx=20)
 
 var_east_out = tk.BooleanVar()
-east_row_frame2 = tk.Frame(window)
+east_row_frame2 = tk.Frame(pe_window)
 east_row_frame2.pack(anchor="w", padx=20)
 
 var_south_out = tk.BooleanVar()
-south_row_frame2 = tk.Frame(window)
+south_row_frame2 = tk.Frame(pe_window)
 south_row_frame2.pack(anchor="w", padx=20)
 
 var_west_out = tk.BooleanVar()
-west_row_frame2 = tk.Frame(window)
+west_row_frame2 = tk.Frame(pe_window)
 west_row_frame2.pack(anchor="w", padx=20)
 
 # Create checkboxes
@@ -509,25 +641,25 @@ fu_west.pack(side="left", padx=(20))
 fu_west.bind("<<ComboboxSelected>>", update_fu2west)
 
 # Separator before image
-separator = ttk.Separator(window, orient='horizontal')
+separator = ttk.Separator(pe_window, orient='horizontal')
 separator.pack(fill='x', padx=10, pady=10)
 
 # Placeholder image to initialize the label
 init_img = ImageTk.PhotoImage(pe_base)
-img_label = tk.Label(window, image=init_img)
+img_label = tk.Label(pe_window, image=init_img)
 img_label.image = init_img
 img_label.pack(padx=10, pady=10)
 
-separator = ttk.Separator(window, orient='horizontal')
+separator = ttk.Separator(pe_window, orient='horizontal')
 separator.pack(fill='x', padx=10, pady=10)
 
 # Bitstream
-bitstream_label = tk.Label(window, text="Bitstream: N/A", font=("Courier", 10), anchor="w", justify="left")
+bitstream_label = tk.Label(pe_window, text="Bitstream: N/A", font=("Courier", 10), anchor="w", justify="left")
 bitstream_label.pack(fill="x", padx=10, pady=5)
 bitstream_str = ", ".join(f"W{i}: {word:08X}" for i, word in enumerate(pe_config.bitstream()))
 bitstream_label.config(text=f"Bitstream:\n\n   {bitstream_str}")
 
 # Start the GUI loop
-window.mainloop()
+cgra_window.mainloop()
 
 print(pe_config)

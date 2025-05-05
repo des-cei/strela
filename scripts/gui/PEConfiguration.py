@@ -20,6 +20,12 @@ class PEConfiguration:
             "south": ['west', 'east', 'north', 'fu_cin', 'fu_in2', 'fu_in1'],
             "west": ['south', 'east', 'north', 'fu_cin', 'fu_in2', 'fu_in1']
         }
+        self.fs_inputs_list = {
+            "north": [],
+            "east": [],
+            "south": [],
+            "west": []
+        }
         self.fs_inputs = {
             "north": 0,
             "east": 0,
@@ -76,11 +82,6 @@ class PEConfiguration:
             "south": 0,
             "west": 0
         }
-        self.word0 = 0
-        self.word1 = 0
-        self.word2 = 0
-        self.word3 = 0
-        self.word4 = 0
 
     # PE inputs
     def set_pe_input(self, input):
@@ -109,6 +110,9 @@ class PEConfiguration:
             if not self.get_pe_input(source):
                 raise ValueError(f"Input {source} is not enabled yet")
             self.fs_inputs[source] |= (1 << self.fs_inputs_destinations[source].index(destination))
+            if destination not in self.fs_inputs_list[source]:
+                self.fs_inputs_list[source].append(destination)
+            # Set FU inputs or PE outputs
             if destination in ['fu_cin','fu_in2', 'fu_in1']:
                 self.sel_fu[destination] = self.fu_input_sources[destination].index(source)
                 self.fu_inputs[destination] = True
@@ -120,11 +124,13 @@ class PEConfiguration:
     def unset_input_destinations(self, source, destination):
         if source in self.fs_inputs_destinations and destination in self.fs_inputs_destinations[source]:
             self.fs_inputs[source] &= ~(1 << self.fs_inputs_destinations[source].index(destination))
-            if destination in ['fu_cin','fu_in2', 'fu_in1']:
-                self.sel_fu[destination] = 0
-                self.fu_inputs[destination] = False
-            else:
-                self.pe_outputs[destination] = 0
+            if destination in self.fs_inputs_list[source]:
+                self.fs_inputs_list[source].remove(destination)
+                if destination in ["fu_in1", "fu_in2", "fu_cin"]:
+                    self.sel_fu[destination] = 0
+                    self.fu_inputs[destination] = False
+                else:
+                    self.pe_outputs[destination] = 0
         else:
             raise ValueError(f"Invalid source: {source} or destination: {destination}")
     
@@ -191,19 +197,26 @@ class PEConfiguration:
         else:
             raise ValueError(f"Invalid FU operation: {operation}")
 
-    def set_fu_feedback(self, value):
+    def set_fu_feedback(self):
         if self.fu_operation in ["add", "mul", "sub", "SL", "SRL", "SRA", "AND", "OR", "XOR"]:
             self.fu_feedback = True
-            self.initial_value = value
         else:
             raise ValueError(f"This operation does not admit feedback")
+    
+    def unset_fu_feedback(self):
+        self.fu_feedback = False
 
-    def set_delay(self, destination, value):
-        if destination in ["north", "east", "south", "west"] and value > 0:
+    def set_delay(self, destination):
+        if destination in ["north", "east", "south", "west"]:
             self.pe_outputs[destination] = self.pe_output_sources[destination].index("fu_delay")
+        else:
+            raise ValueError(f"Invalid FU destination: {destination}")
+    
+    def set_delay_value(self, value):
+        if value >= 0:
             self.delay_value = value
         else:
-            raise ValueError(f"Invalid FU destination: {destination} / Delay value {value}")
+            raise ValueError(f"Invalid delay value {value}")
         
     def set_branch1_output(self, destination):
         if destination in ["north", "east", "south", "west"]:
@@ -235,6 +248,14 @@ class PEConfiguration:
             self.fs_fu |= (1 << self.fs_fu_destinations.index(destination))
             if destination in self.fs_fu_destinations[:-2]:
                 self.pe_outputs[destination] = self.pe_output_sources[destination].index("fu")
+        else:
+            raise ValueError(f"Invalid FU destination: {destination}")
+        
+    def unset_fu_destinations(self, destination):
+        if destination in self.fs_fu_destinations:
+            self.fs_fu &= ~(1 << self.fs_fu_destinations.index(destination))
+            if destination in self.fs_fu_destinations[:-2] and self.pe_outputs[destination] in [3, 4, 5, 6]:
+                self.pe_outputs[destination] = 0
         else:
             raise ValueError(f"Invalid FU destination: {destination}")
     

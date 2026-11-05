@@ -36,49 +36,75 @@ package strela_reg_pkg;
 
   typedef struct packed {logic [31:0] q;} strela_reg2hw_conf_addr_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_imn_0_addr_reg_t;
+  typedef struct packed {
+    struct packed {logic [2:0] q;} ise_0_sew;
+    struct packed {logic [2:0] q;} ise_1_sew;
+    struct packed {logic [2:0] q;} ise_2_sew;
+    struct packed {logic [2:0] q;} ise_3_sew;
+  } strela_reg2hw_ise_sew_reg_t;
 
   typedef struct packed {
-    struct packed {logic [15:0] q;} imn_0_size;
-    struct packed {logic [15:0] q;} imn_0_stride;
-  } strela_reg2hw_imn_0_param_reg_t;
+    struct packed {logic [2:0] q;} ose_0_sew;
+    struct packed {logic [2:0] q;} ose_1_sew;
+    struct packed {logic [2:0] q;} ose_2_sew;
+    struct packed {logic [2:0] q;} ose_3_sew;
+  } strela_reg2hw_ose_sew_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_imn_1_addr_reg_t;
-
-  typedef struct packed {
-    struct packed {logic [15:0] q;} imn_1_size;
-    struct packed {logic [15:0] q;} imn_1_stride;
-  } strela_reg2hw_imn_1_param_reg_t;
-
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_imn_2_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ise_0_addr_reg_t;
 
   typedef struct packed {
-    struct packed {logic [15:0] q;} imn_2_size;
-    struct packed {logic [15:0] q;} imn_2_stride;
-  } strela_reg2hw_imn_2_param_reg_t;
+    struct packed {logic [15:0] q;} ise_0_size;
+    struct packed {logic [15:0] q;} ise_0_stride;
+  } strela_reg2hw_ise_0_param_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_imn_3_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ise_1_addr_reg_t;
 
   typedef struct packed {
-    struct packed {logic [15:0] q;} imn_3_size;
-    struct packed {logic [15:0] q;} imn_3_stride;
-  } strela_reg2hw_imn_3_param_reg_t;
+    struct packed {logic [15:0] q;} ise_1_size;
+    struct packed {logic [15:0] q;} ise_1_stride;
+  } strela_reg2hw_ise_1_param_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_omn_0_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ise_2_addr_reg_t;
 
-  typedef struct packed {logic [15:0] q;} strela_reg2hw_omn_0_size_reg_t;
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ise_2_size;
+    struct packed {logic [15:0] q;} ise_2_stride;
+  } strela_reg2hw_ise_2_param_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_omn_1_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ise_3_addr_reg_t;
 
-  typedef struct packed {logic [15:0] q;} strela_reg2hw_omn_1_size_reg_t;
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ise_3_size;
+    struct packed {logic [15:0] q;} ise_3_stride;
+  } strela_reg2hw_ise_3_param_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_omn_2_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ose_0_addr_reg_t;
 
-  typedef struct packed {logic [15:0] q;} strela_reg2hw_omn_2_size_reg_t;
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ose_0_size;
+    struct packed {logic [15:0] q;} ose_0_stride;
+  } strela_reg2hw_ose_0_param_reg_t;
 
-  typedef struct packed {logic [31:0] q;} strela_reg2hw_omn_3_addr_reg_t;
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ose_1_addr_reg_t;
 
-  typedef struct packed {logic [15:0] q;} strela_reg2hw_omn_3_size_reg_t;
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ose_1_size;
+    struct packed {logic [15:0] q;} ose_1_stride;
+  } strela_reg2hw_ose_1_param_reg_t;
+
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ose_2_addr_reg_t;
+
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ose_2_size;
+    struct packed {logic [15:0] q;} ose_2_stride;
+  } strela_reg2hw_ose_2_param_reg_t;
+
+  typedef struct packed {logic [31:0] q;} strela_reg2hw_ose_3_addr_reg_t;
+
+  typedef struct packed {
+    struct packed {logic [15:0] q;} ose_3_size;
+    struct packed {logic [15:0] q;} ose_3_stride;
+  } strela_reg2hw_ose_3_param_reg_t;
 
   typedef struct packed {
     struct packed {
@@ -151,162 +177,228 @@ package strela_reg_pkg;
   } strela_hw2reg_conf_addr_reg_t;
 
   typedef struct packed {
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ise_0_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ise_1_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ise_2_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ise_3_sew;
+  } strela_hw2reg_ise_sew_reg_t;
+
+  typedef struct packed {
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ose_0_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ose_1_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ose_2_sew;
+    struct packed {
+      logic [2:0] d;
+      logic       de;
+    } ose_3_sew;
+  } strela_hw2reg_ose_sew_reg_t;
+
+  typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_imn_0_addr_reg_t;
+  } strela_hw2reg_ise_0_addr_reg_t;
 
   typedef struct packed {
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_0_size;
+    } ise_0_size;
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_0_stride;
-  } strela_hw2reg_imn_0_param_reg_t;
+    } ise_0_stride;
+  } strela_hw2reg_ise_0_param_reg_t;
 
   typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_imn_1_addr_reg_t;
-
-  typedef struct packed {
-    struct packed {
-      logic [15:0] d;
-      logic        de;
-    } imn_1_size;
-    struct packed {
-      logic [15:0] d;
-      logic        de;
-    } imn_1_stride;
-  } strela_hw2reg_imn_1_param_reg_t;
-
-  typedef struct packed {
-    logic [31:0] d;
-    logic        de;
-  } strela_hw2reg_imn_2_addr_reg_t;
+  } strela_hw2reg_ise_1_addr_reg_t;
 
   typedef struct packed {
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_2_size;
+    } ise_1_size;
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_2_stride;
-  } strela_hw2reg_imn_2_param_reg_t;
+    } ise_1_stride;
+  } strela_hw2reg_ise_1_param_reg_t;
 
   typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_imn_3_addr_reg_t;
+  } strela_hw2reg_ise_2_addr_reg_t;
 
   typedef struct packed {
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_3_size;
+    } ise_2_size;
     struct packed {
       logic [15:0] d;
       logic        de;
-    } imn_3_stride;
-  } strela_hw2reg_imn_3_param_reg_t;
+    } ise_2_stride;
+  } strela_hw2reg_ise_2_param_reg_t;
 
   typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_omn_0_addr_reg_t;
+  } strela_hw2reg_ise_3_addr_reg_t;
 
   typedef struct packed {
-    logic [15:0] d;
-    logic        de;
-  } strela_hw2reg_omn_0_size_reg_t;
-
-  typedef struct packed {
-    logic [31:0] d;
-    logic        de;
-  } strela_hw2reg_omn_1_addr_reg_t;
-
-  typedef struct packed {
-    logic [15:0] d;
-    logic        de;
-  } strela_hw2reg_omn_1_size_reg_t;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ise_3_size;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ise_3_stride;
+  } strela_hw2reg_ise_3_param_reg_t;
 
   typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_omn_2_addr_reg_t;
+  } strela_hw2reg_ose_0_addr_reg_t;
 
   typedef struct packed {
-    logic [15:0] d;
-    logic        de;
-  } strela_hw2reg_omn_2_size_reg_t;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_0_size;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_0_stride;
+  } strela_hw2reg_ose_0_param_reg_t;
 
   typedef struct packed {
     logic [31:0] d;
     logic        de;
-  } strela_hw2reg_omn_3_addr_reg_t;
+  } strela_hw2reg_ose_1_addr_reg_t;
 
   typedef struct packed {
-    logic [15:0] d;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_1_size;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_1_stride;
+  } strela_hw2reg_ose_1_param_reg_t;
+
+  typedef struct packed {
+    logic [31:0] d;
     logic        de;
-  } strela_hw2reg_omn_3_size_reg_t;
+  } strela_hw2reg_ose_2_addr_reg_t;
+
+  typedef struct packed {
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_2_size;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_2_stride;
+  } strela_hw2reg_ose_2_param_reg_t;
+
+  typedef struct packed {
+    logic [31:0] d;
+    logic        de;
+  } strela_hw2reg_ose_3_addr_reg_t;
+
+  typedef struct packed {
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_3_size;
+    struct packed {
+      logic [15:0] d;
+      logic        de;
+    } ose_3_stride;
+  } strela_hw2reg_ose_3_param_reg_t;
 
   // Register -> HW type
   typedef struct packed {
-    strela_reg2hw_ctrl_reg_t ctrl;  // [614:610]
-    strela_reg2hw_mode_reg_t mode;  // [609:608]
-    strela_reg2hw_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles;  // [607:576]
-    strela_reg2hw_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles;  // [575:544]
-    strela_reg2hw_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles;  // [543:512]
-    strela_reg2hw_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles;  // [511:480]
-    strela_reg2hw_conf_addr_reg_t conf_addr;  // [479:448]
-    strela_reg2hw_imn_0_addr_reg_t imn_0_addr;  // [447:416]
-    strela_reg2hw_imn_0_param_reg_t imn_0_param;  // [415:384]
-    strela_reg2hw_imn_1_addr_reg_t imn_1_addr;  // [383:352]
-    strela_reg2hw_imn_1_param_reg_t imn_1_param;  // [351:320]
-    strela_reg2hw_imn_2_addr_reg_t imn_2_addr;  // [319:288]
-    strela_reg2hw_imn_2_param_reg_t imn_2_param;  // [287:256]
-    strela_reg2hw_imn_3_addr_reg_t imn_3_addr;  // [255:224]
-    strela_reg2hw_imn_3_param_reg_t imn_3_param;  // [223:192]
-    strela_reg2hw_omn_0_addr_reg_t omn_0_addr;  // [191:160]
-    strela_reg2hw_omn_0_size_reg_t omn_0_size;  // [159:144]
-    strela_reg2hw_omn_1_addr_reg_t omn_1_addr;  // [143:112]
-    strela_reg2hw_omn_1_size_reg_t omn_1_size;  // [111:96]
-    strela_reg2hw_omn_2_addr_reg_t omn_2_addr;  // [95:64]
-    strela_reg2hw_omn_2_size_reg_t omn_2_size;  // [63:48]
-    strela_reg2hw_omn_3_addr_reg_t omn_3_addr;  // [47:16]
-    strela_reg2hw_omn_3_size_reg_t omn_3_size;  // [15:0]
+    strela_reg2hw_ctrl_reg_t ctrl;  // [702:698]
+    strela_reg2hw_mode_reg_t mode;  // [697:696]
+    strela_reg2hw_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles;  // [695:664]
+    strela_reg2hw_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles;  // [663:632]
+    strela_reg2hw_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles;  // [631:600]
+    strela_reg2hw_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles;  // [599:568]
+    strela_reg2hw_conf_addr_reg_t conf_addr;  // [567:536]
+    strela_reg2hw_ise_sew_reg_t ise_sew;  // [535:524]
+    strela_reg2hw_ose_sew_reg_t ose_sew;  // [523:512]
+    strela_reg2hw_ise_0_addr_reg_t ise_0_addr;  // [511:480]
+    strela_reg2hw_ise_0_param_reg_t ise_0_param;  // [479:448]
+    strela_reg2hw_ise_1_addr_reg_t ise_1_addr;  // [447:416]
+    strela_reg2hw_ise_1_param_reg_t ise_1_param;  // [415:384]
+    strela_reg2hw_ise_2_addr_reg_t ise_2_addr;  // [383:352]
+    strela_reg2hw_ise_2_param_reg_t ise_2_param;  // [351:320]
+    strela_reg2hw_ise_3_addr_reg_t ise_3_addr;  // [319:288]
+    strela_reg2hw_ise_3_param_reg_t ise_3_param;  // [287:256]
+    strela_reg2hw_ose_0_addr_reg_t ose_0_addr;  // [255:224]
+    strela_reg2hw_ose_0_param_reg_t ose_0_param;  // [223:192]
+    strela_reg2hw_ose_1_addr_reg_t ose_1_addr;  // [191:160]
+    strela_reg2hw_ose_1_param_reg_t ose_1_param;  // [159:128]
+    strela_reg2hw_ose_2_addr_reg_t ose_2_addr;  // [127:96]
+    strela_reg2hw_ose_2_param_reg_t ose_2_param;  // [95:64]
+    strela_reg2hw_ose_3_addr_reg_t ose_3_addr;  // [63:32]
+    strela_reg2hw_ose_3_param_reg_t ose_3_param;  // [31:0]
   } strela_reg2hw_t;
 
   // HW -> register type
   typedef struct packed {
-    strela_hw2reg_ctrl_reg_t ctrl;  // [650:641]
-    strela_hw2reg_mode_reg_t mode;  // [640:637]
-    strela_hw2reg_status_reg_t status;  // [636:633]
-    strela_hw2reg_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles;  // [632:600]
-    strela_hw2reg_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles;  // [599:567]
-    strela_hw2reg_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles;  // [566:534]
-    strela_hw2reg_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles;  // [533:501]
-    strela_hw2reg_conf_addr_reg_t conf_addr;  // [500:468]
-    strela_hw2reg_imn_0_addr_reg_t imn_0_addr;  // [467:435]
-    strela_hw2reg_imn_0_param_reg_t imn_0_param;  // [434:401]
-    strela_hw2reg_imn_1_addr_reg_t imn_1_addr;  // [400:368]
-    strela_hw2reg_imn_1_param_reg_t imn_1_param;  // [367:334]
-    strela_hw2reg_imn_2_addr_reg_t imn_2_addr;  // [333:301]
-    strela_hw2reg_imn_2_param_reg_t imn_2_param;  // [300:267]
-    strela_hw2reg_imn_3_addr_reg_t imn_3_addr;  // [266:234]
-    strela_hw2reg_imn_3_param_reg_t imn_3_param;  // [233:200]
-    strela_hw2reg_omn_0_addr_reg_t omn_0_addr;  // [199:167]
-    strela_hw2reg_omn_0_size_reg_t omn_0_size;  // [166:150]
-    strela_hw2reg_omn_1_addr_reg_t omn_1_addr;  // [149:117]
-    strela_hw2reg_omn_1_size_reg_t omn_1_size;  // [116:100]
-    strela_hw2reg_omn_2_addr_reg_t omn_2_addr;  // [99:67]
-    strela_hw2reg_omn_2_size_reg_t omn_2_size;  // [66:50]
-    strela_hw2reg_omn_3_addr_reg_t omn_3_addr;  // [49:17]
-    strela_hw2reg_omn_3_size_reg_t omn_3_size;  // [16:0]
+    strela_hw2reg_ctrl_reg_t ctrl;  // [750:741]
+    strela_hw2reg_mode_reg_t mode;  // [740:737]
+    strela_hw2reg_status_reg_t status;  // [736:733]
+    strela_hw2reg_perf_ctr_total_cycles_reg_t perf_ctr_total_cycles;  // [732:700]
+    strela_hw2reg_perf_ctr_exec_cycles_reg_t perf_ctr_exec_cycles;  // [699:667]
+    strela_hw2reg_perf_ctr_conf_cycles_reg_t perf_ctr_conf_cycles;  // [666:634]
+    strela_hw2reg_perf_ctr_stall_cycles_reg_t perf_ctr_stall_cycles;  // [633:601]
+    strela_hw2reg_conf_addr_reg_t conf_addr;  // [600:568]
+    strela_hw2reg_ise_sew_reg_t ise_sew;  // [567:552]
+    strela_hw2reg_ose_sew_reg_t ose_sew;  // [551:536]
+    strela_hw2reg_ise_0_addr_reg_t ise_0_addr;  // [535:503]
+    strela_hw2reg_ise_0_param_reg_t ise_0_param;  // [502:469]
+    strela_hw2reg_ise_1_addr_reg_t ise_1_addr;  // [468:436]
+    strela_hw2reg_ise_1_param_reg_t ise_1_param;  // [435:402]
+    strela_hw2reg_ise_2_addr_reg_t ise_2_addr;  // [401:369]
+    strela_hw2reg_ise_2_param_reg_t ise_2_param;  // [368:335]
+    strela_hw2reg_ise_3_addr_reg_t ise_3_addr;  // [334:302]
+    strela_hw2reg_ise_3_param_reg_t ise_3_param;  // [301:268]
+    strela_hw2reg_ose_0_addr_reg_t ose_0_addr;  // [267:235]
+    strela_hw2reg_ose_0_param_reg_t ose_0_param;  // [234:201]
+    strela_hw2reg_ose_1_addr_reg_t ose_1_addr;  // [200:168]
+    strela_hw2reg_ose_1_param_reg_t ose_1_param;  // [167:134]
+    strela_hw2reg_ose_2_addr_reg_t ose_2_addr;  // [133:101]
+    strela_hw2reg_ose_2_param_reg_t ose_2_param;  // [100:67]
+    strela_hw2reg_ose_3_addr_reg_t ose_3_addr;  // [66:34]
+    strela_hw2reg_ose_3_param_reg_t ose_3_param;  // [33:0]
   } strela_hw2reg_t;
 
   // Register offsets
@@ -318,22 +410,24 @@ package strela_reg_pkg;
   parameter logic [BlockAw-1:0] STRELA_PERF_CTR_CONF_CYCLES_OFFSET = 7'h14;
   parameter logic [BlockAw-1:0] STRELA_PERF_CTR_STALL_CYCLES_OFFSET = 7'h18;
   parameter logic [BlockAw-1:0] STRELA_CONF_ADDR_OFFSET = 7'h1c;
-  parameter logic [BlockAw-1:0] STRELA_IMN_0_ADDR_OFFSET = 7'h20;
-  parameter logic [BlockAw-1:0] STRELA_IMN_0_PARAM_OFFSET = 7'h24;
-  parameter logic [BlockAw-1:0] STRELA_IMN_1_ADDR_OFFSET = 7'h28;
-  parameter logic [BlockAw-1:0] STRELA_IMN_1_PARAM_OFFSET = 7'h2c;
-  parameter logic [BlockAw-1:0] STRELA_IMN_2_ADDR_OFFSET = 7'h30;
-  parameter logic [BlockAw-1:0] STRELA_IMN_2_PARAM_OFFSET = 7'h34;
-  parameter logic [BlockAw-1:0] STRELA_IMN_3_ADDR_OFFSET = 7'h38;
-  parameter logic [BlockAw-1:0] STRELA_IMN_3_PARAM_OFFSET = 7'h3c;
-  parameter logic [BlockAw-1:0] STRELA_OMN_0_ADDR_OFFSET = 7'h40;
-  parameter logic [BlockAw-1:0] STRELA_OMN_0_SIZE_OFFSET = 7'h44;
-  parameter logic [BlockAw-1:0] STRELA_OMN_1_ADDR_OFFSET = 7'h48;
-  parameter logic [BlockAw-1:0] STRELA_OMN_1_SIZE_OFFSET = 7'h4c;
-  parameter logic [BlockAw-1:0] STRELA_OMN_2_ADDR_OFFSET = 7'h50;
-  parameter logic [BlockAw-1:0] STRELA_OMN_2_SIZE_OFFSET = 7'h54;
-  parameter logic [BlockAw-1:0] STRELA_OMN_3_ADDR_OFFSET = 7'h58;
-  parameter logic [BlockAw-1:0] STRELA_OMN_3_SIZE_OFFSET = 7'h5c;
+  parameter logic [BlockAw-1:0] STRELA_ISE_SEW_OFFSET = 7'h20;
+  parameter logic [BlockAw-1:0] STRELA_OSE_SEW_OFFSET = 7'h24;
+  parameter logic [BlockAw-1:0] STRELA_ISE_0_ADDR_OFFSET = 7'h28;
+  parameter logic [BlockAw-1:0] STRELA_ISE_0_PARAM_OFFSET = 7'h2c;
+  parameter logic [BlockAw-1:0] STRELA_ISE_1_ADDR_OFFSET = 7'h30;
+  parameter logic [BlockAw-1:0] STRELA_ISE_1_PARAM_OFFSET = 7'h34;
+  parameter logic [BlockAw-1:0] STRELA_ISE_2_ADDR_OFFSET = 7'h38;
+  parameter logic [BlockAw-1:0] STRELA_ISE_2_PARAM_OFFSET = 7'h3c;
+  parameter logic [BlockAw-1:0] STRELA_ISE_3_ADDR_OFFSET = 7'h40;
+  parameter logic [BlockAw-1:0] STRELA_ISE_3_PARAM_OFFSET = 7'h44;
+  parameter logic [BlockAw-1:0] STRELA_OSE_0_ADDR_OFFSET = 7'h48;
+  parameter logic [BlockAw-1:0] STRELA_OSE_0_PARAM_OFFSET = 7'h4c;
+  parameter logic [BlockAw-1:0] STRELA_OSE_1_ADDR_OFFSET = 7'h50;
+  parameter logic [BlockAw-1:0] STRELA_OSE_1_PARAM_OFFSET = 7'h54;
+  parameter logic [BlockAw-1:0] STRELA_OSE_2_ADDR_OFFSET = 7'h58;
+  parameter logic [BlockAw-1:0] STRELA_OSE_2_PARAM_OFFSET = 7'h5c;
+  parameter logic [BlockAw-1:0] STRELA_OSE_3_ADDR_OFFSET = 7'h60;
+  parameter logic [BlockAw-1:0] STRELA_OSE_3_PARAM_OFFSET = 7'h64;
 
   // Register index
   typedef enum int {
@@ -345,26 +439,28 @@ package strela_reg_pkg;
     STRELA_PERF_CTR_CONF_CYCLES,
     STRELA_PERF_CTR_STALL_CYCLES,
     STRELA_CONF_ADDR,
-    STRELA_IMN_0_ADDR,
-    STRELA_IMN_0_PARAM,
-    STRELA_IMN_1_ADDR,
-    STRELA_IMN_1_PARAM,
-    STRELA_IMN_2_ADDR,
-    STRELA_IMN_2_PARAM,
-    STRELA_IMN_3_ADDR,
-    STRELA_IMN_3_PARAM,
-    STRELA_OMN_0_ADDR,
-    STRELA_OMN_0_SIZE,
-    STRELA_OMN_1_ADDR,
-    STRELA_OMN_1_SIZE,
-    STRELA_OMN_2_ADDR,
-    STRELA_OMN_2_SIZE,
-    STRELA_OMN_3_ADDR,
-    STRELA_OMN_3_SIZE
+    STRELA_ISE_SEW,
+    STRELA_OSE_SEW,
+    STRELA_ISE_0_ADDR,
+    STRELA_ISE_0_PARAM,
+    STRELA_ISE_1_ADDR,
+    STRELA_ISE_1_PARAM,
+    STRELA_ISE_2_ADDR,
+    STRELA_ISE_2_PARAM,
+    STRELA_ISE_3_ADDR,
+    STRELA_ISE_3_PARAM,
+    STRELA_OSE_0_ADDR,
+    STRELA_OSE_0_PARAM,
+    STRELA_OSE_1_ADDR,
+    STRELA_OSE_1_PARAM,
+    STRELA_OSE_2_ADDR,
+    STRELA_OSE_2_PARAM,
+    STRELA_OSE_3_ADDR,
+    STRELA_OSE_3_PARAM
   } strela_id_e;
 
   // Register width information to check illegal writes
-  parameter logic [3:0] STRELA_PERMIT[24] = '{
+  parameter logic [3:0] STRELA_PERMIT[26] = '{
       4'b0001,  // index[ 0] STRELA_CTRL
       4'b0001,  // index[ 1] STRELA_MODE
       4'b0001,  // index[ 2] STRELA_STATUS
@@ -373,22 +469,24 @@ package strela_reg_pkg;
       4'b1111,  // index[ 5] STRELA_PERF_CTR_CONF_CYCLES
       4'b1111,  // index[ 6] STRELA_PERF_CTR_STALL_CYCLES
       4'b1111,  // index[ 7] STRELA_CONF_ADDR
-      4'b1111,  // index[ 8] STRELA_IMN_0_ADDR
-      4'b1111,  // index[ 9] STRELA_IMN_0_PARAM
-      4'b1111,  // index[10] STRELA_IMN_1_ADDR
-      4'b1111,  // index[11] STRELA_IMN_1_PARAM
-      4'b1111,  // index[12] STRELA_IMN_2_ADDR
-      4'b1111,  // index[13] STRELA_IMN_2_PARAM
-      4'b1111,  // index[14] STRELA_IMN_3_ADDR
-      4'b1111,  // index[15] STRELA_IMN_3_PARAM
-      4'b1111,  // index[16] STRELA_OMN_0_ADDR
-      4'b0011,  // index[17] STRELA_OMN_0_SIZE
-      4'b1111,  // index[18] STRELA_OMN_1_ADDR
-      4'b0011,  // index[19] STRELA_OMN_1_SIZE
-      4'b1111,  // index[20] STRELA_OMN_2_ADDR
-      4'b0011,  // index[21] STRELA_OMN_2_SIZE
-      4'b1111,  // index[22] STRELA_OMN_3_ADDR
-      4'b0011  // index[23] STRELA_OMN_3_SIZE
+      4'b0011,  // index[ 8] STRELA_ISE_SEW
+      4'b0011,  // index[ 9] STRELA_OSE_SEW
+      4'b1111,  // index[10] STRELA_ISE_0_ADDR
+      4'b1111,  // index[11] STRELA_ISE_0_PARAM
+      4'b1111,  // index[12] STRELA_ISE_1_ADDR
+      4'b1111,  // index[13] STRELA_ISE_1_PARAM
+      4'b1111,  // index[14] STRELA_ISE_2_ADDR
+      4'b1111,  // index[15] STRELA_ISE_2_PARAM
+      4'b1111,  // index[16] STRELA_ISE_3_ADDR
+      4'b1111,  // index[17] STRELA_ISE_3_PARAM
+      4'b1111,  // index[18] STRELA_OSE_0_ADDR
+      4'b1111,  // index[19] STRELA_OSE_0_PARAM
+      4'b1111,  // index[20] STRELA_OSE_1_ADDR
+      4'b1111,  // index[21] STRELA_OSE_1_PARAM
+      4'b1111,  // index[22] STRELA_OSE_2_ADDR
+      4'b1111,  // index[23] STRELA_OSE_2_PARAM
+      4'b1111,  // index[24] STRELA_OSE_3_ADDR
+      4'b1111  // index[25] STRELA_OSE_3_PARAM
   };
 
 endpackage

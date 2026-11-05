@@ -1,0 +1,79 @@
+CAPI=2:
+
+# Copyright 2026 CEIMM-UPM
+# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# daniel.vazquez@upm.es
+
+name: "ceimmupm:accelerators:strela"
+description: "STRELA CGRA HDL"
+
+filesets:
+  files_rtl:
+    depend:
+    - x-heep::packages
+    - pulp-platform.org::common_cells
+    files:
+    - rtl/strela_pkg.sv
+    - rtl/strela_reg_pkg.sv
+    - rtl/strela_reg_top.sv
+    - rtl/strela_mmio_interface.sv
+    - rtl/strela_control_unit.sv
+    - rtl/obione.sv
+    - rtl/strela_input_stream_engine.sv
+    - rtl/strela_output_stream_engine.sv
+    - rtl/cgra/cgra_pkg.sv
+    - rtl/cgra/adder_substracter.sv
+    - rtl/cgra/addsub.sv
+    - rtl/cgra/ash.sv
+    - rtl/cgra/mult.sv
+    - rtl/cgra/multiplier.sv
+    - rtl/cgra/shifter.sv
+    - rtl/cgra/alu.sv
+    - rtl/cgra/eager_fork_cfg.sv
+    - rtl/cgra/lazy_fork_cfg.sv
+    - rtl/cgra/fork_sender.sv
+    - rtl/cgra/elastic_buffer.sv
+    - rtl/cgra/elastic_fifo.sv
+    - rtl/cgra/join_merge.sv
+    - rtl/cgra/mux.sv
+    - rtl/cgra/functional_unit.sv
+    - rtl/cgra/processing_element_NESW.sv
+    - rtl/strela_cgra.sv
+    - rtl/strela.sv
+    file_type: systemVerilogSource
+
+  files_behav_rtl:
+    files:
+    - sim/strela_clock_gate.sv
+    file_type: systemVerilogSource
+
+  files_fpga:
+    files:
+    - fpga/strela_clock_gate.sv
+    file_type: systemVerilogSource
+
+  files_wrap:
+    files:
+    - wrapper/strela_wrapper.sv
+    file_type: systemVerilogSource
+
+  files_verilator_waiver:
+    files:
+    - lint/strela.vlt
+    file_type: vlt
+
+targets:
+  default:
+    filesets:
+    - files_rtl
+    - files_wrap
+    - tool_verilator? (files_verilator_waiver)
+    - target_sim? (files_behav_rtl)
+    - target_pynq-z2? (files_fpga)
+    - target_nexys-a7-100t? (files_fpga)
+    - target_genesys2? (files_fpga)
+    - target_vc709? (files_fpga)
+    - target_aup-zu3? (files_fpga)
+    - target_zcu102? (files_fpga)
+    - target_zcu104? (files_fpga)

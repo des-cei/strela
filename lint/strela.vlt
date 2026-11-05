@@ -1,13 +1,43 @@
-// Copyright 2024 CEI-UPM
+// Copyright 2026 CEIMM-UPM
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
 `verilator_config
 
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/output_memory_node.sv" -match "Bits of signal are not used: 'masters_resp_i'[32:0]"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/cgra/PC_superpolyvalent.sv" -match "Bits of signal are not used: 'conf_bits_i'[27:25]"
-lint_off -rule DECLFILENAME -file "../../../hw/vendor/cei_upm_strela/rtl/strela_reg_top.sv"
-lint_off -rule WIDTH -file "../../../hw/vendor/cei_upm_strela/rtl/strela_reg_top.sv" -match "Operator ASSIGNW expects *"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/mmio_interface.sv" -match "Bits of signal are not used: 'reg2hw'*"
-lint_off -rule UNUSED -file "../../../hw/vendor/cei_upm_strela/rtl/mmio_interface.sv" -match "Bits of signal are not used: 'reg2hw'*"
+// Paths are matched with a leading wildcard so the waivers keep working
+// regardless of the directory Verilator is invoked from.
+
+lint_off -rule DECLFILENAME -file "*/rtl/strela_reg_top.sv"
+lint_off -rule WIDTH -file "*/rtl/strela_reg_top.sv" -match "Operator ASSIGNW expects *"
+lint_off -rule UNUSED -file "*/rtl/strela_mmio_interface.sv" -match "Bits of signal are not used: 'reg2hw'*"
+lint_off -rule UNDRIVEN -file "*/rtl/strela_mmio_interface.sv" -match "Bits of signal are not driven: 'hw2reg'*"
+
+// rst_ni reaches the CGRA both asynchronously (reset tree) and
+// synchronously, the latter only through the `disable iff` of the fabric
+// assertions. Not a real clock-domain issue in the synthesizable design.
+lint_off -rule SYNCASYNCNET -file "*/rtl/cgra/processing_element_NESW.sv" -match "Signal flopped as both synchronous and async: *rst_ni*"
+
+// Unused ALU results: the adder's carry out, the upper half of the
+// multiplier product and the unused high bits of the shift amount.
+lint_off -rule UNUSEDSIGNAL -file "*/rtl/cgra/adder_substracter.sv" -match "Signal is not used: 'carry_out'"
+lint_off -rule UNUSEDSIGNAL -file "*/rtl/cgra/multiplier.sv" -match "Bits of signal are not used: *"
+lint_off -rule UNUSEDSIGNAL -file "*/rtl/cgra/shifter.sv" -match "Bits of signal are not used: *"
+
+// obione: feature-gate parameters that the current configuration does not use.
+lint_off -rule UNUSEDPARAM -file "*/rtl/obione.sv" -match "Parameter is not used: 'WR_PORT_EN'"
+lint_off -rule UNUSEDPARAM -file "*/rtl/obione.sv" -match "Parameter is not used: 'RD_PORT_EN'"
+lint_off -rule UNUSEDPARAM -file "*/rtl/obione.sv" -match "Parameter is not used: 'BP_EN'"
+lint_off -rule UNUSEDPARAM -file "*/rtl/obione.sv" -match "Parameter is not used: 'PACK_EN'"
+lint_off -rule UNUSEDPARAM -file "*/rtl/obione.sv" -match "Parameter is not used: 'UNPACK_EN'"
+
+// obione: only the bits selecting a word inside the transfer are consumed.
+lint_off -rule UNUSEDSIGNAL -file "*/rtl/obione.sv" -match "Bits of signal are not used: 'n_actual_addr'*"
+lint_off -rule UNUSEDSIGNAL -file "*/rtl/obione.sv" -match "Bits of signal are not used: 'end_addr'*"
+
+// obione: sub-word write data is assembled with an unsized '0 fill and
+// zero-extended by the assignment; assertion operands are promoted to 32 bits
+// on purpose; the staging register is reset with a 32-bit zero constant.
+lint_off -rule WIDTHEXPAND -file "*/rtl/obione.sv" -match "Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's REPLICATE generates * bits."
+lint_off -rule WIDTHEXPAND -file "*/rtl/obione.sv" -match "Operator ADD expects 32 bits on the * VARREF *"
+lint_off -rule WIDTHTRUNC -file "*/rtl/obione.sv" -match "Operator ASSIGNDLY expects * bits on the Assign RHS, but Assign RHS's CONST '32'h0' generates 32 bits."

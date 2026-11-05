@@ -1,4 +1,4 @@
-// Copyright 2024 CEI-UPM
+// Copyright 2026 CEIMM-UPM
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
@@ -102,169 +102,201 @@
       ]
     }
 
-    { name:     "IMN_0_ADDR",
-      desc:     "STRELA Input Memory Node 0 address register",
-      resval:   0,
+    { name:     "ISE_SEW",
+      desc:     "STRELA Input Stream Engines selected element width. One 3-bit field per engine, bits [3i+2:3i]; bits 23:12 are reserved for engines 4-7",
+      resval:   2925,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "IMN_0_ADDR", desc: "STRELA Input Memory Node 0 address register" }
+        { bits: "2:0", name: "ISE_0_SEW", desc: "Input Stream Engine 0 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "5:3", name: "ISE_1_SEW", desc: "Input Stream Engine 1 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "8:6", name: "ISE_2_SEW", desc: "Input Stream Engine 2 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "11:9", name: "ISE_3_SEW", desc: "Input Stream Engine 3 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
       ]
     }
 
-    { name:     "IMN_0_PARAM",
-      desc:     "STRELA Input Memory Node 0 extra parameters register",
-      resval:   0,
+    { name:     "OSE_SEW",
+      desc:     "STRELA Output Stream Engines selected element width. One 3-bit field per engine, bits [3i+2:3i]; bits 23:12 are reserved for engines 4-7",
+      resval:   2925,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "IMN_0_SIZE",   desc: "STRELA Input Memory Node 0 size register" }
-        { bits: "31:16",  name: "IMN_0_STRIDE", desc: "STRELA Input Memory Node 0 stride register" }
+        { bits: "2:0", name: "OSE_0_SEW", desc: "Output Stream Engine 0 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "5:3", name: "OSE_1_SEW", desc: "Output Stream Engine 1 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "8:6", name: "OSE_2_SEW", desc: "Output Stream Engine 2 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
+        { bits: "11:9", name: "OSE_3_SEW", desc: "Output Stream Engine 3 selected element width (3: 8-bit, 4: 16-bit, 5: 32-bit)", resval: 5 }
       ]
     }
 
-    { name:     "IMN_1_ADDR",
-      desc:     "STRELA Input Memory Node 1 address register",
+    // Input Stream Engines
+
+    { name:     "ISE_0_ADDR",
+      desc:     "STRELA Input Stream Engine 0 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "IMN_1_ADDR", desc: "STRELA Input Memory Node 1 address register" }
+        { bits: "31:0", name: "ISE_0_ADDR", desc: "STRELA Input Stream Engine 0 address register" }
       ]
     }
 
-    { name:     "IMN_1_PARAM",
-      desc:     "STRELA Input Memory Node 1 extra parameters register",
+    { name:     "ISE_0_PARAM",
+      desc:     "STRELA Input Stream Engine 0 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "IMN_1_SIZE",   desc: "STRELA Input Memory Node 1 size register" }
-        { bits: "31:16",  name: "IMN_1_STRIDE", desc: "STRELA Input Memory Node 1 stride register" }
+        { bits: "15:0", name: "ISE_0_SIZE", desc: "STRELA Input Stream Engine 0 size: byte span, stride * count" }
+        { bits: "31:16", name: "ISE_0_STRIDE", desc: "STRELA Input Stream Engine 0 stride in bytes" }
       ]
     }
 
-    { name:     "IMN_2_ADDR",
-      desc:     "STRELA Input Memory Node 2 address register",
+    { name:     "ISE_1_ADDR",
+      desc:     "STRELA Input Stream Engine 1 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "IMN_2_ADDR", desc: "STRELA Input Memory Node 2 address register" }
+        { bits: "31:0", name: "ISE_1_ADDR", desc: "STRELA Input Stream Engine 1 address register" }
       ]
     }
 
-    { name:     "IMN_2_PARAM",
-      desc:     "STRELA Input Memory Node 2 extra parameters register",
+    { name:     "ISE_1_PARAM",
+      desc:     "STRELA Input Stream Engine 1 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "IMN_2_SIZE",   desc: "STRELA Input Memory Node 2 size register" }
-        { bits: "31:16",  name: "IMN_2_STRIDE", desc: "STRELA Input Memory Node 2 stride register" }
+        { bits: "15:0", name: "ISE_1_SIZE", desc: "STRELA Input Stream Engine 1 size: byte span, stride * count" }
+        { bits: "31:16", name: "ISE_1_STRIDE", desc: "STRELA Input Stream Engine 1 stride in bytes" }
       ]
     }
 
-    { name:     "IMN_3_ADDR",
-      desc:     "STRELA Input Memory Node 3 address register",
+    { name:     "ISE_2_ADDR",
+      desc:     "STRELA Input Stream Engine 2 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "IMN_3_ADDR", desc: "STRELA Input Memory Node 3 address register" }
+        { bits: "31:0", name: "ISE_2_ADDR", desc: "STRELA Input Stream Engine 2 address register" }
       ]
     }
 
-    { name:     "IMN_3_PARAM",
-      desc:     "STRELA Input Memory Node 3 extra parameters register",
+    { name:     "ISE_2_PARAM",
+      desc:     "STRELA Input Stream Engine 2 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "IMN_3_SIZE",   desc: "STRELA Input Memory Node 3 size register" }
-        { bits: "31:16",  name: "IMN_3_STRIDE", desc: "STRELA Input Memory Node 3 stride register" }
+        { bits: "15:0", name: "ISE_2_SIZE", desc: "STRELA Input Stream Engine 2 size: byte span, stride * count" }
+        { bits: "31:16", name: "ISE_2_STRIDE", desc: "STRELA Input Stream Engine 2 stride in bytes" }
       ]
     }
 
-    // Output Memory Nodes
-
-    { name:     "OMN_0_ADDR",
-      desc:     "STRELA Output Memory Node 0 address register",
+    { name:     "ISE_3_ADDR",
+      desc:     "STRELA Input Stream Engine 3 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "OMN_0_ADDR", desc: "STRELA Output Memory Node 0 address register" }
+        { bits: "31:0", name: "ISE_3_ADDR", desc: "STRELA Input Stream Engine 3 address register" }
       ]
     }
 
-    { name:     "OMN_0_SIZE",
-      desc:     "STRELA Output Memory Node 0 size register",
+    { name:     "ISE_3_PARAM",
+      desc:     "STRELA Input Stream Engine 3 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "OMN_0_SIZE",   desc: "STRELA Output Memory Node 0 size register" }
+        { bits: "15:0", name: "ISE_3_SIZE", desc: "STRELA Input Stream Engine 3 size: byte span, stride * count" }
+        { bits: "31:16", name: "ISE_3_STRIDE", desc: "STRELA Input Stream Engine 3 stride in bytes" }
       ]
     }
 
-    { name:     "OMN_1_ADDR",
-      desc:     "STRELA Output Memory Node 1 address register",
+    // Output Stream Engines
+
+    { name:     "OSE_0_ADDR",
+      desc:     "STRELA Output Stream Engine 0 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "OMN_1_ADDR", desc: "STRELA Output Memory Node 1 address register" }
+        { bits: "31:0", name: "OSE_0_ADDR", desc: "STRELA Output Stream Engine 0 address register" }
       ]
     }
 
-    { name:     "OMN_1_SIZE",
-      desc:     "STRELA Output Memory Node 1 size register",
+    { name:     "OSE_0_PARAM",
+      desc:     "STRELA Output Stream Engine 0 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "OMN_1_SIZE",   desc: "STRELA Output Memory Node 1 size register" }
+        { bits: "15:0", name: "OSE_0_SIZE", desc: "STRELA Output Stream Engine 0 size: byte span, stride * count" }
+        { bits: "31:16", name: "OSE_0_STRIDE", desc: "STRELA Output Stream Engine 0 stride in bytes" }
       ]
     }
 
-    { name:     "OMN_2_ADDR",
-      desc:     "STRELA Output Memory Node 2 address register",
+    { name:     "OSE_1_ADDR",
+      desc:     "STRELA Output Stream Engine 1 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "OMN_2_ADDR", desc: "STRELA Output Memory Node 2 address register" }
+        { bits: "31:0", name: "OSE_1_ADDR", desc: "STRELA Output Stream Engine 1 address register" }
       ]
     }
 
-    { name:     "OMN_2_SIZE",
-      desc:     "STRELA Output Memory Node 2 size register",
+    { name:     "OSE_1_PARAM",
+      desc:     "STRELA Output Stream Engine 1 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "OMN_2_SIZE",   desc: "STRELA Output Memory Node 2 size register" }
+        { bits: "15:0", name: "OSE_1_SIZE", desc: "STRELA Output Stream Engine 1 size: byte span, stride * count" }
+        { bits: "31:16", name: "OSE_1_STRIDE", desc: "STRELA Output Stream Engine 1 stride in bytes" }
       ]
     }
 
-    { name:     "OMN_3_ADDR",
-      desc:     "STRELA Output Memory Node 3 address register",
+    { name:     "OSE_2_ADDR",
+      desc:     "STRELA Output Stream Engine 2 address register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "31:0", name: "OMN_3_ADDR", desc: "STRELA Output Memory Node 3 address register" }
+        { bits: "31:0", name: "OSE_2_ADDR", desc: "STRELA Output Stream Engine 2 address register" }
       ]
     }
 
-    { name:     "OMN_3_SIZE",
-      desc:     "STRELA Output Memory Node 3 size register",
+    { name:     "OSE_2_PARAM",
+      desc:     "STRELA Output Stream Engine 2 size and stride register",
       resval:   0,
       swaccess: "rw",
       hwaccess: "hrw",
       fields: [
-        { bits: "15:0",   name: "OMN_3_SIZE",   desc: "STRELA Output Memory Node 3 size register" }
+        { bits: "15:0", name: "OSE_2_SIZE", desc: "STRELA Output Stream Engine 2 size: byte span, stride * count" }
+        { bits: "31:16", name: "OSE_2_STRIDE", desc: "STRELA Output Stream Engine 2 stride in bytes" }
+      ]
+    }
+
+    { name:     "OSE_3_ADDR",
+      desc:     "STRELA Output Stream Engine 3 address register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "31:0", name: "OSE_3_ADDR", desc: "STRELA Output Stream Engine 3 address register" }
+      ]
+    }
+
+    { name:     "OSE_3_PARAM",
+      desc:     "STRELA Output Stream Engine 3 size and stride register",
+      resval:   0,
+      swaccess: "rw",
+      hwaccess: "hrw",
+      fields: [
+        { bits: "15:0", name: "OSE_3_SIZE", desc: "STRELA Output Stream Engine 3 size: byte span, stride * count" }
+        { bits: "31:16", name: "OSE_3_STRIDE", desc: "STRELA Output Stream Engine 3 stride in bytes" }
       ]
     }
   ]

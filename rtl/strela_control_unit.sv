@@ -1,31 +1,31 @@
-// Copyright 2024 CEI-UPM
+// Copyright 2026 CEIMM-UPM
 // Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 // Daniel Vazquez (daniel.vazquez@upm.es)
 
-module control_unit
+module strela_control_unit
   import strela_pkg::*;
 (
-    // Clock and reset
-    input logic clk_i,
-    input logic rst_ni,
-    input logic clr_i,
+  // Clock and reset
+  input logic clk_i,
+  input logic rst_ni,
+  input logic clr_i,
 
-    // Control input
-    input logic start_i,
-    input logic conf_change_i,
-    input logic conf_done_i,
-    input logic mn_done_i,
+  // Control input
+  input logic start_i,
+  input logic conf_change_i,
+  input logic conf_done_i,
+  input logic se_done_i,
 
-    // Control output
-    output logic clr_mn_o,
-    output logic clr_cgra_o,
-    output logic conf_needed_o,
-    output logic exec_o,
-    output logic intr_o,
+  // Control output
+  output logic clr_se_o,
+  output logic clr_cgra_o,
+  output logic conf_needed_o,
+  output logic exec_o,
+  output logic intr_o,
 
-    // State
-    output main_fsm_t state_o
+  // State
+  output main_fsm_t state_o
 );
   // synopsys sync_set_reset clr_i
 
@@ -85,7 +85,7 @@ module control_unit
         end
       end
       S_MAIN_EXEC: begin
-        if (mn_done_i) begin
+        if (se_done_i) begin
           n_state = S_MAIN_DONE;
         end else begin
           n_state = S_MAIN_EXEC;
@@ -100,7 +100,7 @@ module control_unit
 
   assign exec_o = state == S_MAIN_EXEC;
   assign intr_o = state == S_MAIN_DONE;
-  assign clr_mn_o = state == S_MAIN_DONE;
+  assign clr_se_o = state == S_MAIN_DONE;
   assign clr_cgra_o = (conf_done_i & !conf_done_reg) || state == S_MAIN_DONE;
   assign conf_needed_o = !conf_done_reg;
   assign state_o = state;
